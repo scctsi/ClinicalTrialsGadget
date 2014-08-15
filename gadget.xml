@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="test1" author_email="randall@your.domain">
+    <Require feature="opensocial-0.9" />
+    <Require feature="dynamic-height" />
+    <Require feature="osapi" />
+  </ModulePrefs>
+  <Content type="html" view="canvas"><![CDATA[
+
+<link rel="stylesheet" type="text/css" href="styles.css?b" />
+<script type="text/javascript" src="lib.js" ></script>
+
+<div>test4</div>
+
+<!-- Fetch a person and friends code for OpenSocial 0.9 -->
+<div>
+  <a href="#" class="normal" onclick='window.oslib.fetchPeople();'>Fetch</a>
+  <div>
+    <span id='viewer'></span>
+    <ul id='friends'></ul>
+  </div>
+</div>
+
+<!-- Posting activity code for OpenSocial 0.9 -->
+<div>
+  <input type='text' id='title' />
+  <button onclick='window.oslib.postActivity();'>Post activity</button>
+  <div id='result_activity'></div>
+</div>
+
+<!-- Sharing appdata with friends for OpenSocial 0.9 -->
+<div>
+  <input type='text' id='content' />
+  <button onclick='window.oslib.shareData();'>Share data</button>
+  <button onclick='window.oslib.fetchFriendData();'>Fetch friend's data</button>
+  <div id='result_appdata'></div>
+  <ul id='contents'></ul>
+</div>
+
+  ]]></Content>
+</Module>
