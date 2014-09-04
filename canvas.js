@@ -7,4 +7,5 @@ function init() {
     // TODO: Write the code for initializing.
 }
 
+
 // TODO: Write the code for Canvas view.

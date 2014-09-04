@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module>
+  <ModulePrefs title="Demo 1"> 
+  <Require feature="opensocial-0.9"/>
+  <Require feature="views"/>
+  <Require feature="dynamic-height"/>
+  <Require feature="osapi"/>
+  <Require feature="rdf"/>
+  </ModulePrefs>
+  <Content type="html" view="profile" preferred_width="700">
+    <![CDATA[
+      <link rel="stylesheet" type="text/css" href="mystyle.css">
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+    ]]>
+
+    <![CDATA[
+     
+      <script type="text/javascript">
+
+        var baseUrl = "http://scctsi-ctds-staging.herokuapp.com/1/clinical_trials/";
+        var gadgetPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
+
+        function init(){
+          makeRequest(renderClinicalTrial);
+        }
+
+        function getUrl(callback){
+          osapi.rdf.getOwner().execute(function(result){
+            var fullname = result.jsonld.fullName;
+            
+            if(fullname = "chikwan")
+              fullname = "Agustin Garcia"
+            
+            if(callback)
+              callback(null, (result.jsonld.fullName === '') ? null : baseUrl + "?pi_full_name=" + fullname);
+          }); 
+        }
+
+        function makeRequest(callback){
+          getUrl(function(err, path){
+            //document.getElementById('fullname').innerHTML = path;
+            if(path != null){
+              $.getJSON(path, function(result){
+                if(callback){
+                  callback(null, result);
+                }
+              });
+            }
+          });  
+        }
+
+        function renderClinicalTrial(errno, result){
+          var menu = $('ul.menu');
+          var li, div;
+
+          for(var i=0;i<result.response.length;i++){
+            li = $('<li/>').addClass('menu-item').appendTo(menu);
+            $('<div/>').addClass("title").text(result.response[i].officialTitle).appendTo(li);
+            div = $('<div/>').addClass("detail").appendTo(li);
+            if(result.response[i].recruitingStatus.length > 0){
+              if(isStatusActive(result.response[i].recruitingStatus)===true){
+                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/check_icon.png').appendTo(div);
+              } else if(isStatusActive(result.response[i].recruitingStatus)===false){
+                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/X_icon.png').appendTo(div);
+              }
+            }
+            $('<span/>').addClass("status").text(result.response[i].recruitingStatus).appendTo(div);
+            div.append(" | DISEASE AREA: ");
+            $('<span/>').addClass("disease").text("").text(result.response[i].diseaseArea).appendTo(div);
+            div.append(" | ");
+            $('<span/>').addClass("site").text(result.response[i].siteStatus).appendTo(div);
+          }
+          $('.title').before('<img class="eye" src =' + gadgetPath + 'images/eye_icon.png><img class="star" src =' + gadgetPath + 'images/star_filled.png>'); 
+          gadgets.window.adjustHeight(10000);
+        }
+
+        function addEditIcon(){
+         // $('menu-item').append('<img class="" src =' + gadgetPath + 'eye_icon.png>');
+        }
+
+        function isStatusActive(text){
+          switch(text){
+            case 'Active, not recruiting':
+            case 'Enrolling by invitation':
+            case 'Recruiting':
+            case 'Not yet recruiting':
+            case 'Completed':
+              return true
+            case 'Suspended':
+            case 'Terminated':
+            case 'Withdrawn':
+              return false;
+            default:
+              return null;
+          }
+        }
+
+        gadgets.util.registerOnLoadHandler(function(){
+          $(document).ready(function() {
+            init();
+            addEditIcon();
+          });
+        });
+      </script>
+      
+      <div id='fullname'></div>
+      <div id='jsonCnt'></div>
+
+      <div class="app">
+        <div>
+          <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
+          <span class="HeaderTitle">Active Clinical Trials</span>
+        </div>
+        <ul class="menu">
+        </ul> 
+      </div>
+    ]]>
+  </Content>
+
+  <Content type="html" view="home">
+    <![CDATA[
+      <link rel="stylesheet" type="text/css" href="mystyle.css">
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+    ]]>
+
+    <![CDATA[
+     
+      <script type="text/javascript">
+
+        var baseUrl = "http://scctsi-ctds-staging.herokuapp.com/1/clinical_trials/";
+
+        function init(){
+          makeRequest(renderClinicalTrial);
+        }
+
+        function getUrl(callback){
+          osapi.rdf.getOwner().execute(function(result){
+            var fullname = result.jsonld.fullName;
+            
+            if(fullname = "chikwan")
+              fullname = "Agustin Garcia"
+            
+            if(callback)
+              callback(null, (result.jsonld.fullName === '') ? null : baseUrl + "?pi_full_name=" + fullname);
+          }); 
+        }
+
+        function makeRequest(callback){
+          getUrl(function(err, path){
+            //document.getElementById('fullname').innerHTML = path;
+            if(path != null){
+              $.getJSON(path, function(result){
+                if(callback){
+                  callback(null, result);
+                }
+              });
+            }
+          });  
+        }
+
+        function renderClinicalTrial(errno, result){
+          var menu = $('ul.menu');
+          var li, div;
+
+          for(var i=0;i<result.response.length;i++){
+            li = $('<li/>').addClass('menu-item').appendTo(menu);
+            $('<div/>').addClass("title").text(result.response[i].officialTitle).appendTo(li);
+            div = $('<div/>').addClass("detail").appendTo(li);
+            
+            div.append('<img src="images/check_icon.png">');
+            /*
+            if(result.response[i].recruitingStatus.length > 0){
+              if(isStatusActive(result.response[i].recruitingStatus)===true){
+                div.append('<div class="check"></div>');
+              } else if(isStatusActive(result.response[i].recruitingStatus)===false){
+                div.append('<div class="x"></div>');
+              }
+            }
+            */
+            
+            $('<span/>').addClass("status").text(result.response[i].recruitingStatus).appendTo(div);
+            div.append(" | DISEASE AREA: ");
+            $('<span/>').addClass("disease").text("").text(result.response[i].diseaseArea).appendTo(div);
+            div.append(" | ");
+            $('<span/>').addClass("site").text(result.response[i].siteStatus).appendTo(div);
+            
+          }
+          gadgets.window.adjustHeight(10000);
+        }
+
+        function isStatusActive(text){
+          switch(text){
+            case 'Active, not recruiting':
+            case 'Enrolling by invitation':
+            case 'Recruiting':
+            case 'Not yet recruiting':
+            case 'Completed':
+              return true
+            case 'Suspended':
+            case 'Terminated':
+            case 'Withdrawn':
+              return false;
+            default:
+              return null;
+          }
+        }
+
+        gadgets.util.registerOnLoadHandler(init);
+      </script>
+      
+      <div class="app">
+        <div>
+          <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
+          <span class="HeaderTitle">Active Clinical Trials</span>
+        </div>
+        <ul class="menu">
+        </ul> 
+      </div>
+    ]]>
+  </Content>  
+</Module>

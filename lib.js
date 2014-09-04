@@ -2,12 +2,49 @@
  * lib.js
  */
 
+//var apiurl = "http://scctsi-ctds-staging.herokuapp.com/1/clinical_trials/";
+
+
 if (typeof window === "undefined") {  
   // we're in node
 	var window = {};
 }
 window.oslib = window.oslib || {};
 
+window.oslib.apiBaseUrl = "http://scctsi-ctds-staging.herokuapp.com/1/clinical_trials/";
+
+window.oslib.getLastName = function() {
+  return "Francis";
+};
+
+window.oslib.getFirstName = function() {
+  return "Brian";
+};
+
+window.oslib.generateUrl = function() {
+  return "d";
+  //return window.oslib.apiBaseUrl + "?pi_full_name=" + window.oslib.getFirstName() + " " + window.oslib.getLastName();
+};
+
+window.oslib.makeRequest = function(callback){
+  $.getJSON(generateUrl(), function(result){
+    html = '';
+    if(result.count > 0){
+      html += '<div id="listcontainer"><ul id="list">';
+      for(var i=0; i<result.count; i++){
+        html += '<li class="list-item">' + result.response[i].officialTitle + '<br>' + 
+        result.response[i].enrollmentStatus + '<br>' + result.response[i].diseaseArea + '</li>';
+      }
+      html += '</ul></div>';
+    }
+    console.log(html);
+    document.getElementById('json').innerHTML = html;
+    if(callback){
+      callback();
+    }
+    gadgets.window.adjustHeight();   
+  });
+};
 
 window.oslib.fetchPeople = function() {
   var batch = osapi.newBatch().
