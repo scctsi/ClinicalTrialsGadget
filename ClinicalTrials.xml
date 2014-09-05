@@ -68,10 +68,12 @@
             $('<div/>').addClass("title").text(result.response[i].officialTitle).appendTo(li);
             div = $('<div/>').addClass("detail").appendTo(li);
             if(result.response[i].recruitingStatus.length > 0){
-              if(isStatusActive(result.response[i].recruitingStatus)===true){
+              if(isStatusActive(result.response[i].recruitingStatus)==='check'){
                 $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/check_icon.png').appendTo(div);
-              } else if(isStatusActive(result.response[i].recruitingStatus)===false){
+              } else if(isStatusActive(result.response[i].recruitingStatus)==='cross'){
                 $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/X_icon.png').appendTo(div);
+              } else if(isStatusActive(result.response[i].recruitingStatus)==='triangle'){
+                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/yellow_triangle_icon.png').appendTo(div);
               }
             }
             $('<span/>').addClass("status").text(result.response[i].recruitingStatus).appendTo(div);
@@ -87,16 +89,17 @@
 
         function isStatusActive(text){
           switch(text){
-            case 'Active, not recruiting':
-            case 'Enrolling by invitation':
             case 'Recruiting':
+            case 'Enrolling by invitation':
+              return 'check';
+            case 'Active, not recruiting':
             case 'Not yet recruiting':
+              return 'triangle';
             case 'Completed':
-              return true
             case 'Suspended':
             case 'Terminated':
             case 'Withdrawn':
-              return false;
+              return 'cross';
             default:
               return null;
           }
@@ -203,10 +206,12 @@
             div = $('<div/>').addClass("detail").appendTo(li);
             
             if(result.response[i].recruitingStatus.length > 0){
-              if(isStatusActive(result.response[i].recruitingStatus)===true){
+              if(isStatusActive(result.response[i].recruitingStatus)==='check'){
                 $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/check_icon.png').appendTo(div);
-              } else if(isStatusActive(result.response[i].recruitingStatus)===false){
+              } else if(isStatusActive(result.response[i].recruitingStatus)==='cross'){
                 $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/X_icon.png').appendTo(div);
+              } else if(isStatusActive(result.response[i].recruitingStatus)==='triangle'){
+                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/yellow_triangle_icon.png').appendTo(div);
               }
             }
             
@@ -222,16 +227,17 @@
 
         function isStatusActive(text){
           switch(text){
-            case 'Active, not recruiting':
-            case 'Enrolling by invitation':
             case 'Recruiting':
+            case 'Enrolling by invitation':
+              return 'check';
+            case 'Active, not recruiting':
             case 'Not yet recruiting':
+              return 'triangle';
             case 'Completed':
-              return true
             case 'Suspended':
             case 'Terminated':
             case 'Withdrawn':
-              return false;
+              return 'cross';
             default:
               return null;
           }
