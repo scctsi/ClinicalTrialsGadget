@@ -202,16 +202,19 @@
 
           for(var i=0;i<result.response.length;i++){
             li = $('<li/>').addClass('menu-item').appendTo(menu);
-            $('<div/>').addClass("title").text(result.response[i].officialTitle).appendTo(li);
+            //li.append('<a href="' + '">' + result.response[i].officialTitle + '</a>');
+            //$('<div/>').addClass("title").text(result.response[i].officialTitle).appendTo(li);
+            $('<a/>').addClass("title").attr('href',parseURLFromATag(result.response[i].url)).attr('target','_blank').text(result.response[i].officialTitle).appendTo(li);
+            
             div = $('<div/>').addClass("detail").appendTo(li);
             
             if(result.response[i].recruitingStatus.length > 0){
               if(isStatusActive(result.response[i].recruitingStatus)==='check'){
-                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/check_icon.png').appendTo(div);
+                $('<img/>').addClass("statImg").attr('src','http://s3.amazonaws.com/clinical-trials-gadget/xml/images/check_icon.png').appendTo(div);
               } else if(isStatusActive(result.response[i].recruitingStatus)==='cross'){
-                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/X_icon.png').appendTo(div);
+                $('<img/>').addClass("statImg").attr('src','http://s3.amazonaws.com/clinical-trials-gadget/xml/images/X_icon.png').appendTo(div);
               } else if(isStatusActive(result.response[i].recruitingStatus)==='triangle'){
-                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/yellow_triangle_icon.png').appendTo(div);
+                $('<img/>').addClass("statImg").attr('src','http://s3.amazonaws.com/clinical-trials-gadget/xml/images/yellow_triangle_icon.png').appendTo(div);
               }
             }
             
@@ -242,6 +245,13 @@
               return null;
           }
         }
+
+        function parseURLFromATag(text){
+          var urlStart = text.lastIndexOf('href=') + 5;
+          var urlEnd = text.indexOf('>');
+          return text.slice(urlStart, urlEnd).replace(/'/g,'').replace(/"/g,'');
+        }
+
 
         gadgets.util.registerOnLoadHandler(init);
       
