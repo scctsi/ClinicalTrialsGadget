@@ -5,12 +5,12 @@
   <Require feature="views"/>
   <Require feature="dynamic-height"/>
   <Require feature="osapi"/>
-  <Require feature="rdf"/>
+  <Require feature="jsonld"/>
   </ModulePrefs>
-  <Content type="html" view="profile" preferred_width="700">
+  <Content type="html" view="home" preferred_width="700">
     <![CDATA[
       <link rel="stylesheet" type="text/css" href="mystyle.css">
-      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
     ]]>
 
@@ -20,18 +20,27 @@
 
         var baseUrl = "http://scctsi-ctds-staging.herokuapp.com/1/clinical_trials/";
         var gadgetPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
+        var elemList = "sortable",
+          elemTrial = "li.trial",
+          classTrial = "trial",
+          classTrialHidden = "trial-hidden",
+          classTrialFeature = "trial-feature",
+          classIconEye = "icon-eye",
+          classIconStar = "icon-star",
+          urlPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
 
         function init(){
           makeRequest(renderClinicalTrial);
         }
 
         function getUrl(callback){
-          osapi.rdf.getOwner().execute(function(result){
-            var fullname = result.jsonld.fullName;
+
+          osapi.jsonld.getOwner().execute(function(result){
+            var fullname = result.jsonld['prns:fullName'];
             
-            if(fullname = "chikwan")
-              fullname = "Agustin Garcia"
-            
+            if(fullname === "chikwan")
+              fullname = "Agustin Garcia";
+          
             if(callback)
               callback(null, (result.jsonld.fullName === '') ? null : baseUrl + "?pi_full_name=" + fullname);
           }); 
@@ -51,7 +60,7 @@
         }
 
         function renderClinicalTrial(errno, result){
-          var menu = $('ul.menu');
+          var menu = $('#sortable');
           var li, div;
 
           for(var i=0;i<result.response.length;i++){
@@ -72,12 +81,9 @@
             $('<span/>').addClass("site").text(result.response[i].siteStatus).appendTo(div);
           }
           $('.title').before('<img class="eye" src =' + gadgetPath + 'images/eye_icon.png><img class="star" src =' + gadgetPath + 'images/star_filled.png>'); 
-          gadgets.window.adjustHeight(10000);
+          gadgets.window.adjustHeight(3000);
         }
 
-        function addEditIcon(){
-         // $('menu-item').append('<img class="" src =' + gadgetPath + 'eye_icon.png>');
-        }
 
         function isStatusActive(text){
           switch(text){
@@ -98,27 +104,53 @@
 
         gadgets.util.registerOnLoadHandler(function(){
           $(document).ready(function() {
+
+            $("#sortable").sortable({
+              start: function( event, ui ) {
+                ui.placeholder.height(ui.item.height());
+              },
+
+              items: "li:not(." + classTrialHidden + ")",
+              cancel: "." + classTrialHidden
+            });
+
+            $( "."+classIconEye ).click( function( event ){
+              event.preventDefault();
+              var $trial = findTrialElement( $(this) );
+              if ( $trial !== null ) {
+                processTrialEyeClick( $trial );
+              }
+            });
+
+            $( "."+classIconStar ).click( function( event ){
+              event.preventDefault();
+              var $trial = findTrialElement( $(this) );
+              if ( $trial !== null ) {
+               processTrialStarClick( $trial );
+              }
+            });
+
             init();
-            addEditIcon();
-          });
+          });  
         });
+        
       </script>
       
       <div id='fullname'></div>
       <div id='jsonCnt'></div>
 
-      <div class="app">
+      <div class="gadgetContainer">
         <div>
           <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
           <span class="HeaderTitle">Active Clinical Trials</span>
         </div>
-        <ul class="menu">
+        <ul id="sortable">
         </ul> 
       </div>
     ]]>
   </Content>
 
-  <Content type="html" view="home">
+  <Content type="html" view="profile" preferred_width="700">
     <![CDATA[
       <link rel="stylesheet" type="text/css" href="mystyle.css">
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -130,17 +162,18 @@
       <script type="text/javascript">
 
         var baseUrl = "http://scctsi-ctds-staging.herokuapp.com/1/clinical_trials/";
+        var gadgetPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
 
         function init(){
           makeRequest(renderClinicalTrial);
         }
 
         function getUrl(callback){
-          osapi.rdf.getOwner().execute(function(result){
-            var fullname = result.jsonld.fullName;
+            osapi.jsonld.getOwner().execute(function(result){
+            var fullname = result.jsonld['prns:fullName'];
             
-            if(fullname = "chikwan")
-              fullname = "Agustin Garcia"
+            if(fullname === "chikwan")
+              fullname = "Agustin Garcia";
             
             if(callback)
               callback(null, (result.jsonld.fullName === '') ? null : baseUrl + "?pi_full_name=" + fullname);
@@ -161,7 +194,7 @@
         }
 
         function renderClinicalTrial(errno, result){
-          var menu = $('ul.menu');
+          var menu = $('#sortable');
           var li, div;
 
           for(var i=0;i<result.response.length;i++){
@@ -169,16 +202,13 @@
             $('<div/>').addClass("title").text(result.response[i].officialTitle).appendTo(li);
             div = $('<div/>').addClass("detail").appendTo(li);
             
-            div.append('<img src="images/check_icon.png">');
-            /*
             if(result.response[i].recruitingStatus.length > 0){
               if(isStatusActive(result.response[i].recruitingStatus)===true){
-                div.append('<div class="check"></div>');
+                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/check_icon.png').appendTo(div);
               } else if(isStatusActive(result.response[i].recruitingStatus)===false){
-                div.append('<div class="x"></div>');
+                $('<img/>').addClass("statImg").attr('src','https://s3.amazonaws.com/clinical-trials-gadget/xml/images/X_icon.png').appendTo(div);
               }
             }
-            */
             
             $('<span/>').addClass("status").text(result.response[i].recruitingStatus).appendTo(div);
             div.append(" | DISEASE AREA: ");
@@ -187,7 +217,7 @@
             $('<span/>').addClass("site").text(result.response[i].siteStatus).appendTo(div);
             
           }
-          gadgets.window.adjustHeight(10000);
+          gadgets.window.adjustHeight(3000);
         }
 
         function isStatusActive(text){
@@ -208,14 +238,15 @@
         }
 
         gadgets.util.registerOnLoadHandler(init);
-      </script>
       
-      <div class="app">
+      </script>
+
+      <div class="gadgetContainer">
         <div>
           <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
           <span class="HeaderTitle">Active Clinical Trials</span>
         </div>
-        <ul class="menu">
+        <ul id="sortable">
         </ul> 
       </div>
     ]]>

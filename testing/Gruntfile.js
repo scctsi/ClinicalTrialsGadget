@@ -24,12 +24,15 @@ module.exports = function( grunt ) {
     },
     copy: {
       main: {
-        src: "../gadget.xml",
-        dest: "../target/gadget.xml"
+        files:[
+          {expand: true, src: "../*.xml", dest: "../target/*.xml"},
+          {expand: true, src: "../*.js", dest: "../target/*.js"},
+          {expand: true, src: "../*.css", dest: "../target/*.css"}
+        ]
       }
     },
     watch: {
-      files: ["<%= jshint.files %>", "../gadget.xml"],
+      files: ["<%= jshint.files %>", "../*.xml"],
       tasks: ["jshint", "mochaTest", "copy"]
     }
   });

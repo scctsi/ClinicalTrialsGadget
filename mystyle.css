@@ -1,0 +1,63 @@
+
+.app{
+	font-family: Arial;
+}
+
+.HeaderTitle{
+	position: relative;
+	bottom: 8px;
+	padding: 5px;
+	color:#990000;
+	font-size: 18px;
+	font-weight: bold;
+
+}
+
+ul.menu{
+	list-style-type: none;
+	margin: 5px;
+	padding: 0;
+}
+
+li{
+	padding: 2px 2px 20px 2px;
+}
+
+.eye{
+	float: right;
+	padding: 2px;
+}
+
+.star{
+	float: right;
+	padding: 2px;
+}
+
+.title{
+	color:#267196;
+	font-size: 15px;
+	font-weight: bold;
+	width: 600px;
+	padding: 0px;
+	margin: 0px;
+}
+
+.detail{
+	font-size: 12px;
+	padding: 1px;
+	margin-left: 0px; 
+	text-transform: uppercase;
+}
+
+.status{
+	margin-left: 5px;
+	color:#990000;
+}
+
+.disease{
+	color:#000000;
+}
+
+.site{
+	color:#777777;
+}
