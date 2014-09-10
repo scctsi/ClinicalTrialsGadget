@@ -85,13 +85,14 @@
 
         function getTrialOrder(callback){
           osapi.appdata.get({
-            'userid':'@owner',
+            'userId':'@owner',
             'groupId':'@self',
             'appId':'@app',
             'fields':'order'
           }).execute(function(result){
-            var owner = os.osapi.getOwnerFromResult(result);
-            var order = owner.order;
+            var viewer = os.osapi.getViewerFromResult(result);
+            var order = viewer.order;
+            
             if(order.length > 0 && callback){
               callback($.parseJSON(order));
             }
@@ -113,17 +114,17 @@
           for(var i=0; i<orderList.length; i++){
             var t = findTrial(orderList[i].i,jsonObj);
             if(t !== null){
-              renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v, orderList[i].f);
+              renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url);
             }
           }
           gadgets.window.adjustHeight(3000);
         }
 
-        function renderTrial(id,title,recStat,disease,siteStat,url,visible,feature){
+        function renderTrial(id,title,recStat,disease,siteStat,url){
           var menu = $('#sortable');
           var li, div;
-          li = $('<li/>').addClass('menu-item').appendTo(menu);
-          //$('<div/>').addClass("test").text(result.response[i].studyCompletionDate).appendTo(li);
+
+          li = $('<li/>').addClass('menu-item').attr('id',id).appendTo(menu);
           $("<a/>").addClass("title").attr({href:parseURLFromATag(url), target:"_blank"}).text(title).appendTo(li);
             
           div = $('<div/>').addClass("detail").appendTo(li);
@@ -141,11 +142,26 @@
         function findTrial(id, jsonObj){
           for(var i in jsonObj.response){
             if(jsonObj.response[i].id == id){
-              console.log('found');
               return jsonObj.response[i];
             }
           }
           return null;
+        }
+
+        function saveTrialOrder(arrayId){
+          var trials = [];
+          for(var i=0; i<arrayId.length; i++){
+            var trial = {};
+            trial.i = arrayId[i];
+            trials.push(trial);
+          }
+          osapi.appdata.update({
+            'userId':'@owner',
+            'groupId':'@self',
+            'appId':'@app',
+            'data':{'order':JSON.stringify(trials)}
+          }).execute(function(response){
+          });
         }
 
         function loadTrialOrder(){
@@ -153,12 +169,13 @@
             if(path !== null){
               $.getJSON(path, function(result){
                 if(!result.error){
+                  sortTrials(result);
                   var trials = [];
                   for(var i=0; i<result.response.length; i++){
                     var trial = {};
                     trial.i = "" + result.response[i].id;
-                    trial.f = 1;
-                    trial.v = 1;
+                    //trial.f = 1;
+                    //trial.v = 1;
                     trials.push(trial);
                   }
                   
@@ -173,18 +190,6 @@
               });
             }
           });
-        }
-
-        function makeRequest(callback){
-          getAPIUrl(function(path){
-            if(path != null){
-              $.getJSON(path, function(result){
-                if(callback){
-                  callback(null, result);
-                }
-              });
-            }
-          });  
         }
 
         function parseURLFromATag(text){
@@ -204,8 +209,11 @@
         var gadgetPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
 
         function init(){
-          $("#debug").html("update 1");
-          makeRequest(renderClinicalTrial);
+          getTrialOrder(function(orderObj){
+            getTrialData(function(dataObj){
+              displayData(orderObj, dataObj);
+            });
+          });
         }
 
         function renderClinicalTrial(errno, result){
@@ -265,10 +273,9 @@
           urlPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
 
         function init(){
-          $("#debug").html("update 3");
           //loadTrialOrder();
           //makeRequest(renderClinicalTrial);
-          //loadTrialOrder();
+          loadTrialOrder();
           //loadTrials();
           getTrialOrder(function(orderObj){
             getTrialData(function(dataObj){
@@ -305,8 +312,16 @@
           $(document).ready(function() {
 
             $("#sortable").sortable({
+              scroll: true,
+              scrollSensitivity: 80,
+              scrollSpeed: 2,
+
               start: function( event, ui ) {
                 ui.placeholder.height(ui.item.height());
+              },
+
+              update: function(event, ui) {
+                saveTrialOrder($(this).sortable('toArray'));
               },
 
               items: "li:not(." + classTrialHidden + ")",
