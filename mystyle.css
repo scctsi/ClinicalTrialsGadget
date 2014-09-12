@@ -13,7 +13,7 @@
 
 }
 
-ul#trialList{
+ul#trial-list{
 	list-style-type: none;
 	margin: 5px;
 	padding: 0;
@@ -22,16 +22,36 @@ ul#trialList{
 li.trial{
 	padding: 10px 5px 10px 5px;
 	margin: 1px 0px 1px 0px;
-	border: 1px dotted #d6d6d6;
 }
 
-li.trial:hover{
+div.home-view li.trial:hover{
 	background: #d6d6d6;
 }
+
+div.home-view li.trial{
+	border: 1px dotted #d6d6d6;
+	cursor: move;
+	cursor: grab;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+}
+
+
+div.home-view li.trial:active{
+	border: 1px dotted #d6d6d6;
+	cursor: grabbing;
+	cursor: -moz-grabbing;
+	cursor: -webkit-grabbing;
+}
+
 
 .eye-icon{
 	float: right;
 	padding: 2px;
+}
+
+div.profile-view .eye-icon{
+	visibility: hidden;
 }
 
 .star-icon{
@@ -39,12 +59,21 @@ li.trial:hover{
 	padding: 2px;
 }
 
+div.profile-view .star-icon{
+	visibility: hidden;
+}
+
 .title{
 	color:#267196;
 	font-size: 15px;
 	font-weight: bold;
-	padding-right: 50px;
 	margin: 0px;
+}
+
+div.home-view .title{
+	padding-right: 50px;
+	pointer-events: none;
+	cursor: default;
 }
 
 .detail{

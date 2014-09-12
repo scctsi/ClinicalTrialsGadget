@@ -80,21 +80,6 @@
           });
         }
 
-        function getTrialOrder(callback){
-          osapi.appdata.get({
-            'userId':'@owner',
-            'groupId':'@self',
-            'appId':'@app',
-            'fields':'order'
-          }).execute(function(result){
-            var viewer = os.osapi.getViewerFromResult(result);
-            var order = viewer.order;
-            
-            if(order.length && callback){
-              callback($.parseJSON(order));
-            }
-          });
-        }
 
         function findTrial(id, jsonObj){
           for(var i in jsonObj.response){
@@ -124,22 +109,71 @@
         function loadTrialOrder(){
           getAPIUrl(function(path){
             if(path !== null){
-              $.getJSON(path, function(result){
-                sortTrials(result);
-                var res = result.response;
+              getTrialOrder(function(orderList){
+                $.getJSON(path, function(result){
+                  var trials = orderList.slice() || [];
+                  
+                  trials = $.merge(trials, findNewTrial(orderList, result.response));
+                  if(orderList.length !== trials.length){
+                    osapi.appdata.update({
+                      'userId':'@owner',
+                      'groupId':'@self',
+                      'appId':'@app',
+                      'data':{'order':JSON.stringify(trials)}
+                    }).execute(function(response){
+                    });
+                  }
+                });
+              });
+            }
+          });
+        }
+
+        function findNewTrial(dbArr, apiArr){
+          var hash = {}, diffArr = [];
+          for(var i=0;i<dbArr.length;i++){
+            hash[dbArr[i].i] = true;
+          }
+
+          for(var i=0;i<apiArr.length;i++){
+            if(hash[apiArr[i].id] !== true)
+              diffArr.push({'i':apiArr[i].id,'f':1,'v':1});
+          }
+          return diffArr;
+        }
+
+
+
+/*
+
                 var trials = [];
                 for(var i=0; i<res.length; i++){
                   trials.push({'i':res[i].id+'','f':1,'v':0});
                 }                  
                 
-                osapi.appdata.update({
-                  'userId':'@owner',
-                  'groupId':'@self',
-                  'appId':'@app',
-                  'data':{'order':JSON.stringify(trials)}
-                }).execute(function(response){
-                });
-              });
+                    osapi.appdata.update({
+                      'userId':'@owner',
+                      'groupId':'@self',
+                      'appId':'@app',
+                      'data':{'order':JSON.stringify(trials)}
+                    }).execute(function(response){
+                    });
+*/
+
+
+
+        function getTrialOrder(callback){
+          osapi.appdata.get({
+            'userId':'@owner',
+            'groupId':'@self',
+            'appId':'@app',
+            'fields':'order'
+          }).execute(function(result){
+            var viewer = os.osapi.getViewerFromResult(result);
+            var order = viewer.order;
+            
+            if(order.length && callback){
+              callback($.parseJSON(order));
             }
           });
         }
@@ -168,7 +202,7 @@
         function renderTrial(pid, title, recStat, disease, siteStat, url){
           var li, div;
 
-          li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trialList"));
+          li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list"));
           $("<img/>",{class:"eye-icon", src:ENV_LOCAL_URL + "/images/eye_icon.png"}).appendTo(li);
           $("<img/>",{class:"star-icon", src:ENV_LOCAL_URL + "/images/star_filled.png"}).appendTo(li);
           $("<div/>",{class:"title"}).prepend($("<a/>",{id:pid, href:$(url).attr("href"), target:"_blank", text:title}))
@@ -203,7 +237,7 @@
         function renderClinicalTrial(pid, title, recStat, disease, siteStat, url){
           var li, div;
 
-          li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trialList"));
+          li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list"));
           $("<a/>",{id:pid, class:"title", href:$(url).attr("href"), target:"_blank", text:title}).appendTo(li);
           
           div = $("<div/>",{class:"detail"}).appendTo(li);
@@ -219,13 +253,15 @@
       </script>
 
       <div id='debug'></div>
-      <div class="gadgetContainer">
-        <div>
-          <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
-          <span class="HeaderTitle">Active Clinical Trials</span>
-        </div>
-        <ul id="trialList">
-        </ul> 
+      <div class="profile-view">
+        <div class="gadgetContainer">
+          <div>
+            <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
+            <span class="HeaderTitle">Active Clinical Trials</span>
+          </div>
+          <ul id="trial-list">
+          </ul>
+        </div> 
       </div>
     ]]>
   </Content>  
@@ -245,21 +281,21 @@
           urlPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
 
         function init(){
-          //loadTrialOrder();
-          //makeRequest(renderClinicalTrial);
           loadTrialOrder();
           //loadTrials();
+          
           getTrialOrder(function(orderObj){
             getTrialData(function(dataObj){
               displayData(orderObj, dataObj);
             });
           });
+          
         }
 
         gadgets.util.registerOnLoadHandler(function(){
           $(document).ready(function() {
 
-            $("#trialList").sortable({
+            $("#trial-list").sortable({
               axis: "y",
               scroll: true,
 
@@ -298,14 +334,15 @@
       </script>
       
       <div id="debug"></div>
-
-      <div class="clinicalTrialGadget">
-        <div>
-          <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
-          <span class="HeaderTitle">Active Clinical Trials</span>
+      <div class="home-view">
+        <div class="clinicalTrialGadget">
+          <div>
+            <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
+            <span class="HeaderTitle">Active Clinical Trials</span>
+          </div>
+          <ul id="trial-list">
+          </ul> 
         </div>
-        <ul id="trialList">
-        </ul> 
       </div>
     ]]>
   </Content>
