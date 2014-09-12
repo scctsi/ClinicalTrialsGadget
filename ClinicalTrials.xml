@@ -174,9 +174,9 @@
           div = $("<div/>",{class:"detail"}).appendTo(li);
           if(recStat.length) $("<img/>",{class:"statImg", src:ENV_LOCAL_URL + getImgByStat(recStat)}).appendTo(div); 
           
-          $("<span/>",{class:"status",text:recStat}).appendTo(div);
-          $("<span/>",{class:"disease",text:" | DISEASE AREA: " + disease}).appendTo(div);
-          $("<span/>",{class:"site",text:" | " + siteStat}).appendTo(div);
+          $("<span/>",{class:"status", text:recStat}).appendTo(div);
+          $("<span/>",{class:"disease", text:" | DISEASE AREA: " + disease}).appendTo(div);
+          $("<span/>",{class:"site", text:" | " + siteStat}).appendTo(div);
         }
 
       </script>
@@ -197,30 +197,18 @@
           });
         }
 
-        function renderClinicalTrial(errno, result){
+        function renderClinicalTrial(pid, title, recStat, disease, siteStat, url){
+          var li, div, elemlist = $("#trialList");
 
-          sortTrials(result);
-          var menu = $('#trialList');
-          var li, div;
-
-          for(var i=0;i<result.response.length;i++){
-            li = $('<li/>').addClass('menu-item').appendTo(menu);
-            $('<div/>').addClass("test").text(result.response[i].studyCompletionDate).appendTo(li);
-            $("<a/>").addClass("title").attr({href:parseURLFromATag(result.response[i].url), target:"_blank"}).text(result.response[i].officialTitle).appendTo(li);
-            
-            div = $('<div/>').addClass("detail").appendTo(li);
-            
-            if(result.response[i].recruitingStatus.length > 0)
-              $('<img/>').addClass("statImg").attr('src','http://s3.amazonaws.com/clinical-trials-gadget/xml/' + getImgByStat(result.response[i].recruitingStatus)).appendTo(div);
-            
-            $('<span/>').addClass("status").text(result.response[i].recruitingStatus).appendTo(div);
-            div.append(" | DISEASE AREA: ");
-            $('<span/>').addClass("disease").text("").text(result.response[i].diseaseArea).appendTo(div);
-            div.append(" | ");
-            $('<span/>').addClass("site").text(result.response[i].siteStatus).appendTo(div);
-            
-          }
-          gadgets.window.adjustHeight(2000);
+          li = $("<li/>",{id:pid, class:"trial"}).appendTo(elemlist);
+          $("<a/>",{id:pid, class:"title", href:$(url).attr("href"), target:"_blank", text:title}).appendTo(li);
+          
+          div = $("<div/>",{class:"detail"}).appendTo(li);
+          if(recStat.length) $("<img/>",{class:"statImg", src:ENV_LOCAL_URL + getImgByStat(recStat)}).appendTo(div); 
+          
+          $("<span/>",{class:"status", text:recStat}).appendTo(div);
+          $("<span/>",{class:"disease", text:" | DISEASE AREA: " + disease}).appendTo(div);
+          $("<span/>",{class:"site", text:" | " + siteStat}).appendTo(div);
         }
 
         gadgets.util.registerOnLoadHandler(init);
@@ -230,7 +218,7 @@
       <div id='debug'></div>
       <div class="gadgetContainer">
         <div>
-          <span class="HeaderImage"><img src="/images/microscope_iconR.png"></span>
+          <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
           <span class="HeaderTitle">Active Clinical Trials</span>
         </div>
         <ul id="trialList">

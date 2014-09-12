@@ -1,5 +1,5 @@
 
-.app{
+.clinicalTrialGadget{
 	font-family: Arial;
 }
 
@@ -13,14 +13,20 @@
 
 }
 
-ul.menu{
+ul#trialList{
 	list-style-type: none;
 	margin: 5px;
 	padding: 0;
 }
 
-li{
-	padding: 2px 2px 20px 2px;
+li.trial{
+	padding: 10px 5px 10px 5px;
+	margin: 1px 0px 1px 0px;
+	border: 1px dotted #CCCCCC;
+}
+
+li.trial:hover{
+	background: #CCCCCC;
 }
 
 .eye{
@@ -47,6 +53,11 @@ li{
 	padding: 1px;
 	margin-left: 0px; 
 	text-transform: uppercase;
+}
+
+.statImg{
+	position:relative;
+	bottom: -3px;
 }
 
 .status{
