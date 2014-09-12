@@ -25,9 +25,6 @@ module.exports = function( grunt ) {
     copy: {
       main: {
         files:[
-          {expand: true, src: "../*.xml", dest: "../target/*.xml"},
-          {expand: true, src: "../*.js", dest: "../target/*.js"},
-          {expand: true, src: "../*.css", dest: "../target/*.css"}
         ]
       }
     },
@@ -42,7 +39,7 @@ module.exports = function( grunt ) {
   grunt.loadNpmTasks( "grunt-contrib-watch" );
   grunt.loadNpmTasks( "grunt-contrib-copy" );
 
-  grunt.registerTask( "default", ["jshint", "mochaTest","copy"] );
+  grunt.registerTask( "default", ["jshint", "mochaTest"] );
   grunt.registerTask( "test", ["jshint", "copy"]);
 
 };
