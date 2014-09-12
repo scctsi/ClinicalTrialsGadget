@@ -23,7 +23,7 @@
           var fullname, baseUrl = "http://scctsi-ctds-production.herokuapp.com/1/clinical_trials/";
           osapi.jsonld.getOwner().execute(function(result){
             fullname = result.jsonld['prns:fullName'];
-            
+
             if(fullname === "chikwan") fullname = "Agustin Garcia";
             if(callback)
               callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
@@ -31,21 +31,21 @@
         }
 
         function getImgByStat(status){
-          switch(status){
-            case 'Recruiting':
-            case 'Enrolling by invitation':
+          switch(status.toLowerCase()){
+            case 'recruiting':
+            case 'enrolling by invitation':
               return '/images/check_icon.png';
-            case 'Active, not recruiting':
-            case 'Not yet recruiting':
+            case 'active, not recruiting':
+            case 'not yet recruiting':
               return '/images/yellow_triangle_icon.png';
-            case 'Completed':
-            case 'Suspended':
-            case 'Terminated':
-            case 'Withdrawn':
+            case 'completed':
+            case 'suspended':
+            case 'terminated':
+            case 'withdrawn':
               return '/images/X_icon.png';
             default:
               return null;
-          }
+          }          
         }
 
         function getOrderNumByStatus(status){
@@ -166,10 +166,13 @@
         }
 
         function renderTrial(pid, title, recStat, disease, siteStat, url){
-          var li, div, elemlist = $("#trialList");
+          var li, div;
 
-          li = $("<li/>",{id:pid, class:"trial"}).appendTo(elemlist);
-          $("<a/>",{id:pid, class:"title", href:$(url).attr("href"), target:"_blank", text:title}).appendTo(li);
+          li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trialList"));
+          $("<img/>",{class:"eye-icon", src:ENV_LOCAL_URL + "/images/eye_icon.png"}).appendTo(li);
+          $("<img/>",{class:"star-icon", src:ENV_LOCAL_URL + "/images/star_filled.png"}).appendTo(li);
+          $("<div/>",{class:"title"}).prepend($("<a/>",{id:pid, href:$(url).attr("href"), target:"_blank", text:title}))
+          .appendTo(li);
           
           div = $("<div/>",{class:"detail"}).appendTo(li);
           if(recStat.length) $("<img/>",{class:"statImg", src:ENV_LOCAL_URL + getImgByStat(recStat)}).appendTo(div); 
@@ -198,9 +201,9 @@
         }
 
         function renderClinicalTrial(pid, title, recStat, disease, siteStat, url){
-          var li, div, elemlist = $("#trialList");
+          var li, div;
 
-          li = $("<li/>",{id:pid, class:"trial"}).appendTo(elemlist);
+          li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trialList"));
           $("<a/>",{id:pid, class:"title", href:$(url).attr("href"), target:"_blank", text:title}).appendTo(li);
           
           div = $("<div/>",{class:"detail"}).appendTo(li);
@@ -253,37 +256,12 @@
           });
         }
 
-        function renderClinicalTrial(errno, result){
-
-          var menu = $('#trialList');
-          var li, div;
-
-          for(var i=0;i<result.response.length;i++){
-            li = $('<li/>').addClass('menu-item').appendTo(menu);
-
-            $('<div/>').addClass("title").text(result.response[i].officialTitle).appendTo(li);
-            div = $('<div/>').addClass("detail").appendTo(li);
-
-            if(result.response[i].recruitingStatus.length > 0)
-              $('<img/>').addClass("statImg").attr('src','http://s3.amazonaws.com/clinical-trials-gadget/xml/' + getImgByStat(result.response[i].recruitingStatus)).appendTo(div);
-
-            $('<span/>').addClass("status").text(result.response[i].recruitingStatus).appendTo(div);
-            div.append(" | DISEASE AREA: ");
-            $('<span/>').addClass("disease").text("").text(result.response[i].diseaseArea).appendTo(div);
-            div.append(" | ");
-            $('<span/>').addClass("site").text(result.response[i].siteStatus).appendTo(div);
-          }
-          $('.title').before('<img class="eye" src =' + gadgetPath + '/images/eye_icon.png><img class="star" src =' + gadgetPath + '/images/star_filled.png>'); 
-          gadgets.window.adjustHeight(3000);
-        }
-
         gadgets.util.registerOnLoadHandler(function(){
           $(document).ready(function() {
 
             $("#trialList").sortable({
+              axis: "y",
               scroll: true,
-              scrollSensitivity: 80,
-              scrollSpeed: 2,
 
               start: function( event, ui ) {
                 ui.placeholder.height(ui.item.height());

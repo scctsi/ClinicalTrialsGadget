@@ -22,19 +22,19 @@ ul#trialList{
 li.trial{
 	padding: 10px 5px 10px 5px;
 	margin: 1px 0px 1px 0px;
-	border: 1px dotted #CCCCCC;
+	border: 1px dotted #d6d6d6;
 }
 
 li.trial:hover{
-	background: #CCCCCC;
+	background: #d6d6d6;
 }
 
-.eye{
+.eye-icon{
 	float: right;
 	padding: 2px;
 }
 
-.star{
+.star-icon{
 	float: right;
 	padding: 2px;
 }
@@ -43,8 +43,7 @@ li.trial:hover{
 	color:#267196;
 	font-size: 15px;
 	font-weight: bold;
-	width: 600px;
-	padding: 0px;
+	padding-right: 50px;
 	margin: 0px;
 }
 
