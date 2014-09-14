@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
-  <ModulePrefs title="Demo2" description="Demo2"> 
+  <ModulePrefs title="Clinical Trials" description="Clinical Trials"> 
     <Require feature="opensocial-0.9"/>
     <Require feature="views"/>
     <Require feature="osapi"/>
