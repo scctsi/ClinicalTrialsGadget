@@ -24,11 +24,11 @@ li.trial{
 	margin: 1px 0px 1px 0px;
 }
 
-div.home-view li.trial:hover{
+div.view-home li.trial:hover{
 	background: #d6d6d6;
 }
 
-div.home-view li.trial{
+div.view-home li.trial{
 	border: 1px dotted #d6d6d6;
 	cursor: move;
 	cursor: grab;
@@ -37,7 +37,7 @@ div.home-view li.trial{
 }
 
 
-div.home-view li.trial:active{
+div.view-home li.trial:active{
 	border: 1px dotted #d6d6d6;
 	cursor: grabbing;
 	cursor: -moz-grabbing;
@@ -51,7 +51,7 @@ div.home-view li.trial:active{
 	cursor: pointer;
 }
 
-div.profile-view .icon-eye{
+div.view-profile .icon-eye{
 	visibility: hidden;
 }
 
@@ -61,9 +61,52 @@ div.profile-view .icon-eye{
 	cursor: pointer;
 }
 
-div.profile-view .icon-star{
+div.view-profile .icon-star{
 	visibility: hidden;
 }
+
+div.view-profile li.trial-hidden {
+	visibility: hidden;
+}
+
+div.view-home li.trial-hidden {
+    border: 1px solid #d1d1d1;
+    cursor: default;
+}
+
+div.view-home li.trial-hidden div.title a{
+    color: #d1d1d1;
+}
+
+div.view-home li.trial-hidden div.detail .status{
+    color: #d1d1d1;
+}
+
+div.view-home li.trial-hidden div.detail .disease{
+    color: #d1d1d1;
+}
+
+div.view-home li.trial-hidden div.detail .site{
+    color: #d1d1d1;
+}
+
+div.view-home li.trial-hidden div.detail .statImg{
+    visibility: hidden;
+}
+
+div.view-home li.trial-hidden img.icon-star {
+    visibility: hidden;
+}
+
+div.view-home li.trial-hidden img.icon-eye {
+    -webkit-filter: opacity(50%);
+}
+
+div.view-home li.trial-hidden:hover{
+	background-color: transparent;
+}
+
+
 
 .title{
 	color:#267196;
@@ -72,7 +115,7 @@ div.profile-view .icon-star{
 	margin: 0px;
 }
 
-div.home-view .title, a{
+div.view-home .title, a{
 	color:#267196;
 	padding-right: 50px;
 	pointer-events: none;

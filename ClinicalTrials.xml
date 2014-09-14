@@ -66,7 +66,7 @@
             fullname = result.jsonld['prns:fullName'];
 
             // for testing only
-            if(fullname === "chikwan") fullname = "Agustin Garcia";
+            if(fullname === "chikwan") fullname = "Linda Sher";
             if(callback)
               callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
           }); 
@@ -107,6 +107,8 @@
                     for(var i=0; i<apiData.response.length; i++){
                       var trial = {};
                       trial.i = '' + apiData.response[i].id;
+                      trial.f = 1;
+                      trial.h = 0;
                       trials.push(trial);
                     }
                   } else {
@@ -117,6 +119,8 @@
                       for(var i=0; i<newTrials.length; i++){
                         var trial = {};
                         trial.i = '' + newTrials[i];
+                        trial.f = 1;
+                        trial.h = 0;
                         trials.push(trial);
                       }
                     }
@@ -176,37 +180,20 @@
           return null;
         }
 
-        function saveTrialOrder(arrayId){
-          var trials = [];
-          for(var i=0; i<arrayId.length; i++){
-            var trial = {};
-            trial.i = arrayId[i];
-            trials.push(trial);
-          }
-          osapi.appdata.update({
-            'userId':'@owner',
-            'groupId':'@self',
-            'appId':'@app',
-            'data':{'ct_data':JSON.stringify(trials)}
-          }).execute(function(response){
-          });
-        }
-
-
-        function displayData(orderList, jsonObj){
+        function displayData(orderList, jsonObj, renderAll){
           for(var i=0; i<orderList.length; i++){
             var t = findTrial(orderList[i].i,jsonObj);
-            if(t !== null){
-              renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url);
+            if(t !== null && (renderAll || orderList[i].v === 1)){
+              renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v);
             }
           }
-          gadgets.window.adjustHeight(1500);
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 50);
         }
 
-        function renderTrial(pid, title, recStat, disease, siteStat, url){
+        function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible){
           var li, div;
-
           li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list"));
+          if(isVisible === 0) li.addClass("trial-hidden");
           $("<img/>",{class:"icon-eye", src:ENV_LOCAL_URL + "/images/eye_icon.png"}).appendTo(li);
           $("<img/>",{class:"icon-star", src:ENV_LOCAL_URL + "/images/star_filled.png"}).appendTo(li);
           $("<div/>",{class:"title"}).prepend($("<a/>",{id:pid, href:$(url).attr("href"), target:"_blank", text:title}))
@@ -231,7 +218,7 @@
         var gadgetPath = ENV_LOCAL_URL;
         function init(){
           loadTrialOrder(function(result,result2){
-            displayData(result,result2);
+            displayData(result,result2, false);
           });
         }
 
@@ -254,8 +241,8 @@
       </script>
 
       <div id='debug'></div>
-      <div class="profile-view">
-        <div class="gadgetContainer">
+      <div class="view-profile">
+        <div class="clinicalTrialGadget">
           <div>
             <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
             <span class="HeaderTitle">Active Clinical Trials</span>
@@ -283,11 +270,12 @@
 
         function init(){
           loadTrialOrder(function(result,result2){
-            displayData(result,result2);
+            displayData(result,result2,true);
           });
         }
 
         gadgets.util.registerOnLoadHandler(function(){
+
           $(document).ready(function() {
 
             $("#trial-list").sortable({
@@ -299,37 +287,113 @@
               },
 
               update: function(event, ui) {
-                saveTrialOrder($(this).sortable('toArray'));
+                saveTrialStatus();
               },
 
               items: "li:not(." + classTrialHidden + ")",
               cancel: "." + classTrialHidden
             });
 
-            $( "."+classIconEye ).click( function( event ){
+            $(".view-home").on("click", ".icon-eye", function( event ){
               event.preventDefault();
-              var $trial = findTrialElement( $(this) );
+              var $trial = findTrialElement($(this));
               if ( $trial !== null ) {
-                processTrialEyeClick( $trial );
+                processTrialEyeClick($trial);
+                saveTrialStatus();
               }
             });
 
-            $( "."+classIconStar ).click( function( event ){
+            $(".view-home").on("click", ".icon-star", function( event ){
+              alert('b');
+              /*
               event.preventDefault();
               var $trial = findTrialElement( $(this) );
               if ( $trial !== null ) {
                processTrialStarClick( $trial );
               }
+              */
             });
+
+            
+            function findTrialElement($elem){
+              return $elem.parents("li.trial");
+            }
+
+            function processTrialEyeClick($trial) {
+              var $trialLastVisible = findLastVisibleTrial();
+              toggleTrialVisibility($trial);
+              moveTrialToEndOfVisibleList( $trial, $trialLastVisible );
+            }
+
+            function findLastVisibleTrial() {
+              var $trialList = $( "#trial-list" ).children();
+              var $trialLastVisible = null; // $( "#"+elemList+" li:last" );
+              $trialList.each( function( index ) {
+                if ( !( $( this ).hasClass( classTrialHidden ) ) ) {
+                  $trialLastVisible = $( this );
+                } else {
+                // exits the loop
+                  return false;
+                }   
+              });
+              return $trialLastVisible;
+            }
+
+            function toggleTrialVisibility($trial){
+              if($trial.hasClass("trial-hidden")){
+                $trial.removeClass("trial-hidden");
+              } else {
+                $trial.addClass("trial-hidden");
+                if ( $trial.hasClass("trial-feat")){
+                  $trial.find(".icon-star").attr("src",urlPath + "images/star_empty.png");
+                  $trial.removeClass("trial-feat");
+                } 
+              }
+            }
+
+            function moveTrialToEndOfVisibleList( $trial, $trialLastVisible ) {
+              
+              var $clone = $trial.clone(true, true);
+              if ( $trial.is( $trialLastVisible ) ) {
+                $clone.appendTo( $( "#trial-list" ) );
+              } else if ( $trialLastVisible === null ) {
+                $clone.insertBefore( $( "#trial-list" ).children()[0] );
+              } else {
+                $clone.insertAfter( $trialLastVisible );
+              }
+              $trial.remove();
+            }
+
 
             init();
           });  
         });
+
+        function saveTrialStatus(){
+          var listItem = $("ul#trial-list li.trial");
+          var trials = [];
+          listItem.each(function() {
+            trial = {};
+            trial.i = $(this).attr("id");
+            trial.v = $(this).attr("class").indexOf("trial-hidden") > 0 ? 0 : 1;
+            trials.push(trial);
+          });
+
+          if(listItem.length > 0){
+            osapi.appdata.update({
+              'userId':'@owner',
+              'groupId':'@self',
+              'appId':'@app',
+              'data':{'ct_data':JSON.stringify(trials)}
+            }).execute(function(response){
+            });
+          }
+        }
         
       </script>
       
       <div id="debug"></div>
-      <div class="home-view">
+      <div class="view-home">
         <div class="clinicalTrialGadget">
           <div>
             <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
