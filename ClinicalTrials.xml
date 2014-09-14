@@ -12,7 +12,7 @@
   <Content type="html" view="default, home, profile">
     <![CDATA[
       <!DOCTYPE html>
-      <link rel="stylesheet" type="text/css" href="css/gadget.css">
+      <link rel="stylesheet" type="text/css" href="css/csl_gadget.css">
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
       <script type="text/javascript" src="http://s3.amazonaws.com/clinical-trials-gadget/xml/js/environment.js" ></script>
@@ -63,10 +63,10 @@
         function getAPIUrl(callback){
           var fullname, baseUrl = "http://scctsi-ctds-production.herokuapp.com/1/clinical_trials/";
           osapi.jsonld.getOwner().execute(function(result){
-            fullname = result.jsonld['prns:fullName'];
+            fullname = result.jsonld['foaf:firstName'] + ' ' + result.jsonld['foaf:lastName'];
 
             // for testing only
-            if(fullname === "chikwan") fullname = "Linda Sher";
+            if(fullname === "chi kwan") fullname = "Linda Sher";
             if(callback)
               callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
           }); 
@@ -76,8 +76,9 @@
           getAPIUrl(function(url){
             if(url !== null){
               $.getJSON(url, function(result){
-                if(callback)
+                if(callback){
                   callback(result);
+                }
               });  
             }
           });
@@ -108,7 +109,7 @@
                       var trial = {};
                       trial.i = '' + apiData.response[i].id;
                       trial.f = 1;
-                      trial.h = 0;
+                      trial.v = 1;
                       trials.push(trial);
                     }
                   } else {
@@ -120,7 +121,7 @@
                         var trial = {};
                         trial.i = '' + newTrials[i];
                         trial.f = 1;
-                        trial.h = 0;
+                        trial.v = 1;
                         trials.push(trial);
                       }
                     }
@@ -187,7 +188,7 @@
               renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v);
             }
           }
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 50);
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 60);
         }
 
         function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible){
