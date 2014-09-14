@@ -1,0 +1,148 @@
+
+.clinicalTrialGadget{
+	font-family: Arial;
+}
+
+.HeaderTitle{
+	position: relative;
+	bottom: 8px;
+	padding: 5px;
+	color:#990000;
+	font-size: 18px;
+	font-weight: bold;
+
+}
+
+ul#trial-list{
+	list-style-type: none;
+	margin: 5px;
+	padding: 0;
+}
+
+li.trial{
+	padding: 10px 5px 10px 5px;
+	margin: 1px 0px 1px 0px;
+}
+
+div.view-home li.trial:hover{
+	background: #d6d6d6;
+}
+
+div.view-home li.trial{
+	border: 1px dotted #d6d6d6;
+	cursor: move;
+	cursor: grab;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+}
+
+
+div.view-home li.trial:active{
+	border: 1px dotted #d6d6d6;
+	cursor: grabbing;
+	cursor: -moz-grabbing;
+	cursor: -webkit-grabbing;
+}
+
+
+.icon-eye{
+	float: right;
+	padding: 2px;
+	cursor: pointer;
+}
+
+div.view-profile .icon-eye{
+	visibility: hidden;
+}
+
+.icon-star{
+	float: right;
+	padding: 2px;
+	cursor: pointer;
+}
+
+div.view-profile .icon-star{
+	visibility: hidden;
+}
+
+div.view-profile li.trial-hidden {
+	visibility: hidden;
+}
+
+div.view-home li.trial-hidden {
+    border: 1px solid #d1d1d1;
+    cursor: default;
+}
+
+div.view-home li.trial-hidden div.title a{
+    color: #d1d1d1;
+}
+
+div.view-home li.trial-hidden div.detail .status{
+    color: #d1d1d1;
+}
+
+div.view-home li.trial-hidden div.detail .disease{
+    color: #d1d1d1;
+}
+
+div.view-home li.trial-hidden div.detail .site{
+    color: #d1d1d1;
+}
+
+div.view-home li.trial-hidden div.detail .statImg{
+    visibility: hidden;
+}
+
+div.view-home li.trial-hidden img.icon-star {
+    visibility: hidden;
+}
+
+div.view-home li.trial-hidden img.icon-eye {
+    -webkit-filter: opacity(50%);
+}
+
+div.view-home li.trial-hidden:hover{
+	background-color: transparent;
+}
+
+
+
+.title{
+	color:#267196;
+	font-size: 15px;
+	font-weight: bold;
+	margin: 0px;
+}
+
+div.view-home .title, a{
+	color:#267196;
+	padding-right: 50px;
+	pointer-events: none;
+	cursor: default;
+}
+
+.detail{
+	font-size: 12px;
+	padding: 1px;
+	margin-left: 0px; 
+	text-transform: uppercase;
+}
+
+.statImg{
+	position:relative;
+	bottom: -3px;
+}
+
+.status{
+	margin-left: 5px;
+	color:#990000;
+}
+
+.disease{
+	color:#000000;
+}
+
+.site{
+	color:#777777;
+}
