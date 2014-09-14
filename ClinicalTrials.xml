@@ -13,22 +13,11 @@
     <![CDATA[
       <!DOCTYPE html>
       <link rel="stylesheet" type="text/css" href="mystyle.css">
-      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
       <script type="text/javascript" src="js/environment.js" ></script>
       <script type="text/javascript" src="js/os.js" ></script>
       <script type="text/javascript">
-
-        function getAPIUrl(callback){
-          var fullname, baseUrl = "http://scctsi-ctds-production.herokuapp.com/1/clinical_trials/";
-          osapi.jsonld.getOwner().execute(function(result){
-            fullname = result.jsonld['prns:fullName'];
-
-            if(fullname === "chikwan") fullname = "Agustin Garcia";
-            if(callback)
-              callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
-          }); 
-        }
 
         function getImgByStat(status){
           switch(status.toLowerCase()){
@@ -48,7 +37,7 @@
           }          
         }
 
-        function getOrderNumByStatus(status){
+        function getOrderNumByStat(status){
           switch(status){
             case 'Recruiting':
               return 1;
@@ -71,15 +60,98 @@
           }        
         }
 
-        function sortTrials(data){
-          var trials = data.response;
-          trials.sort(function(a,b){
-            if(a.recruitingStatus === b.recruitingStatus)
-              return new Date(b.studyCompletionDate) - new Date(a.studyCompletionDate);
-            return getOrderNumByStatus(a.recruitingStatus) - getOrderNumByStatus(b.recruitingStatus);
+        function getAPIUrl(callback){
+          var fullname, baseUrl = "http://scctsi-ctds-production.herokuapp.com/1/clinical_trials/";
+          osapi.jsonld.getOwner().execute(function(result){
+            fullname = result.jsonld['prns:fullName'];
+
+            // for testing only
+            if(fullname === "chikwan") fullname = "Agustin Garcia";
+            if(callback)
+              callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
+          }); 
+        }
+
+        function getAPIData(callback){
+          getAPIUrl(function(url){
+            if(url !== null){
+              $.getJSON(url, function(result){
+                if(callback)
+                  callback(result);
+              });  
+            }
           });
         }
 
+        function getAppData(callback){
+          osapi.appdata.get({
+            'userId':'@owner',
+            'groupId':'@self',
+            'appId':'@app',
+            'fields':'ct_data'
+          }).execute(function(result){
+            if(callback)
+              callback(result);
+          });
+        }
+
+        function loadTrialOrder(){
+          getAPIData(function(apiData){
+            getAppData(function(appData){
+              if(!apiData.error && !appData.error){
+                var viewer = os.osapi.getViewerFromResult(appData),
+                  update = false, trials = [];
+
+                if($.isEmptyObject(viewer)){
+                  if(apiData.count){
+                    sortTrials(apiData.response);
+                    for(var i=0; i<apiData.response.length; i++){
+                      var trial = {};
+                      trial.i = '' + apiData.response[i].id;
+                      trials.push(trial);
+                    }
+                    update = true;
+                  }
+                } else {
+                  alert('a');
+                }
+
+                if(update && trials.length){
+                  osapi.appdata.update({
+                    'userId':'@owner',
+                    'groupId':'@self',
+                    'appId':'@app',
+                    'data':{'ct_data':JSON.stringify(trials)}
+                  }).execute(function(response){
+                  });     
+                }       
+              }
+            });
+          });
+        }
+
+        function sortTrials(trials){
+          if(trials.length > 1){
+            trials.sort(function(a,b){
+              if(a.recruitingStatus === b.recruitingStatus)
+                return new Date(b.studyCompletionDate) - new Date(a.studyCompletionDate);
+              return getOrderNumByStat(a.recruitingStatus) - getOrderNumByStat(b.recruitingStatus);
+            });
+          }
+        }
+
+        function findNewTrial(dbArr, apiArr){
+          var hash = {}, diffArr = [];
+          for(var i=0;i<dbArr.length;i++){
+            hash[dbArr[i].i] = true;
+          }
+
+          for(var i=0;i<apiArr.length;i++){
+            if(hash[apiArr[i].id] !== true)
+              diffArr.push({'i':apiArr[i].id,'f':1,'v':1});
+          }
+          return diffArr;
+        }
 
         function findTrial(id, jsonObj){
           for(var i in jsonObj.response){
@@ -106,88 +178,6 @@
           });
         }
 
-        function loadTrialOrder(){
-          getAPIUrl(function(path){
-            if(path !== null){
-              getTrialOrder(function(orderList){
-                $.getJSON(path, function(result){
-                  var trials = orderList.slice() || [];
-                  
-                  trials = $.merge(trials, findNewTrial(orderList, result.response));
-                  if(orderList.length !== trials.length){
-                    osapi.appdata.update({
-                      'userId':'@owner',
-                      'groupId':'@self',
-                      'appId':'@app',
-                      'data':{'order':JSON.stringify(trials)}
-                    }).execute(function(response){
-                    });
-                  }
-                });
-              });
-            }
-          });
-        }
-
-        function findNewTrial(dbArr, apiArr){
-          var hash = {}, diffArr = [];
-          for(var i=0;i<dbArr.length;i++){
-            hash[dbArr[i].i] = true;
-          }
-
-          for(var i=0;i<apiArr.length;i++){
-            if(hash[apiArr[i].id] !== true)
-              diffArr.push({'i':apiArr[i].id,'f':1,'v':1});
-          }
-          return diffArr;
-        }
-
-
-
-/*
-
-                var trials = [];
-                for(var i=0; i<res.length; i++){
-                  trials.push({'i':res[i].id+'','f':1,'v':0});
-                }                  
-                
-                    osapi.appdata.update({
-                      'userId':'@owner',
-                      'groupId':'@self',
-                      'appId':'@app',
-                      'data':{'order':JSON.stringify(trials)}
-                    }).execute(function(response){
-                    });
-*/
-
-
-
-        function getTrialOrder(callback){
-          osapi.appdata.get({
-            'userId':'@owner',
-            'groupId':'@self',
-            'appId':'@app',
-            'fields':'order'
-          }).execute(function(result){
-            var viewer = os.osapi.getViewerFromResult(result);
-            var order = viewer.order;
-            
-            if(order.length && callback){
-              callback($.parseJSON(order));
-            }
-          });
-        }
-
-        function getTrialData(callback){
-          getAPIUrl(function(path){
-            if(path !== null){
-              $.getJSON(path, function(json){
-                if(callback)
-                  callback(json);
-              });
-            }
-          });
-        }
 
         function displayData(orderList, jsonObj){
           for(var i=0; i<orderList.length; i++){
@@ -282,14 +272,14 @@
 
         function init(){
           loadTrialOrder();
-          //loadTrials();
-          
+
+          /*
           getTrialOrder(function(orderObj){
             getTrialData(function(dataObj){
               displayData(orderObj, dataObj);
             });
           });
-          
+          */
         }
 
         gadgets.util.registerOnLoadHandler(function(){

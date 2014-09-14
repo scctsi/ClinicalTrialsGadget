@@ -45,21 +45,23 @@ div.home-view li.trial:active{
 }
 
 
-.eye-icon{
+.icon-eye{
 	float: right;
 	padding: 2px;
+	cursor: pointer;
 }
 
-div.profile-view .eye-icon{
+div.profile-view .icon-eye{
 	visibility: hidden;
 }
 
-.star-icon{
+.icon-star{
 	float: right;
 	padding: 2px;
+	cursor: pointer;
 }
 
-div.profile-view .star-icon{
+div.profile-view .icon-star{
 	visibility: hidden;
 }
 
