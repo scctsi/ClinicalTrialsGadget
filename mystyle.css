@@ -72,7 +72,8 @@ div.profile-view .icon-star{
 	margin: 0px;
 }
 
-div.home-view .title{
+div.home-view .title, a{
+	color:#267196;
 	padding-right: 50px;
 	pointer-events: none;
 	cursor: default;

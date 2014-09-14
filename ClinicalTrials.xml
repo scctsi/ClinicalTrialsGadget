@@ -84,8 +84,7 @@
         }
 
         function getAppData(callback){
-          osapi.appdata.get({
-            'userId':'@owner',
+          osapi.appdata.get({'userId':'@owner',
             'groupId':'@self',
             'appId':'@app',
             'fields':'ct_data'
@@ -95,36 +94,50 @@
           });
         }
 
-        function loadTrialOrder(){
+        function loadTrialOrder(callback){
           getAPIData(function(apiData){
             getAppData(function(appData){
               if(!apiData.error && !appData.error){
-                var viewer = os.osapi.getViewerFromResult(appData),
-                  update = false, trials = [];
+                var viewer = os.osapi.getViewerFromResult(appData);
+                var trials = [];
 
-                if($.isEmptyObject(viewer)){
-                  if(apiData.count){
-                    sortTrials(apiData.response);
+                if(apiData.count){
+                  sortTrials(apiData.response);
+                  if($.isEmptyObject(viewer)){
                     for(var i=0; i<apiData.response.length; i++){
                       var trial = {};
                       trial.i = '' + apiData.response[i].id;
                       trials.push(trial);
                     }
-                    update = true;
+                  } else {
+                    var trialObj = JSON.parse(viewer.ct_data);
+                    var newTrials = findNewTrial(trialObj, apiData.response)
+                    if(newTrials.length){
+                      trials = trialObj.slice();
+                      for(var i=0; i<newTrials.length; i++){
+                        var trial = {};
+                        trial.i = '' + newTrials[i];
+                        trials.push(trial);
+                      }
+                    }
                   }
-                } else {
-                  alert('a');
-                }
 
-                if(update && trials.length){
-                  osapi.appdata.update({
-                    'userId':'@owner',
-                    'groupId':'@self',
-                    'appId':'@app',
-                    'data':{'ct_data':JSON.stringify(trials)}
-                  }).execute(function(response){
-                  });     
-                }       
+                  if(trials.length){
+                    osapi.appdata.update({'userId':'@owner',
+                      'groupId':'@self',
+                      'appId':'@app',
+                      'data':{'ct_data':JSON.stringify(trials)}
+                    }).execute(function(response){
+                      if(callback){
+                        callback(trials, apiData);
+                      }
+                    });  
+                  } else {
+                    if(callback){
+                      callback(JSON.parse(viewer.ct_data), apiData);
+                    }
+                  }
+                }
               }
             });
           });
@@ -147,8 +160,9 @@
           }
 
           for(var i=0;i<apiArr.length;i++){
-            if(hash[apiArr[i].id] !== true)
-              diffArr.push({'i':apiArr[i].id,'f':1,'v':1});
+            if(hash[apiArr[i].id] !== true){
+              diffArr.push(apiArr[i].id);
+            }
           }
           return diffArr;
         }
@@ -173,7 +187,7 @@
             'userId':'@owner',
             'groupId':'@self',
             'appId':'@app',
-            'data':{'order':JSON.stringify(trials)}
+            'data':{'ct_data':JSON.stringify(trials)}
           }).execute(function(response){
           });
         }
@@ -193,8 +207,8 @@
           var li, div;
 
           li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list"));
-          $("<img/>",{class:"eye-icon", src:ENV_LOCAL_URL + "/images/eye_icon.png"}).appendTo(li);
-          $("<img/>",{class:"star-icon", src:ENV_LOCAL_URL + "/images/star_filled.png"}).appendTo(li);
+          $("<img/>",{class:"icon-eye", src:ENV_LOCAL_URL + "/images/eye_icon.png"}).appendTo(li);
+          $("<img/>",{class:"icon-star", src:ENV_LOCAL_URL + "/images/star_filled.png"}).appendTo(li);
           $("<div/>",{class:"title"}).prepend($("<a/>",{id:pid, href:$(url).attr("href"), target:"_blank", text:title}))
           .appendTo(li);
           
@@ -215,12 +229,9 @@
       <script type="text/javascript">
 
         var gadgetPath = ENV_LOCAL_URL;
-
         function init(){
-          getTrialOrder(function(orderObj){
-            getTrialData(function(dataObj){
-              displayData(orderObj, dataObj);
-            });
+          loadTrialOrder(function(result,result2){
+            displayData(result,result2);
           });
         }
 
@@ -271,15 +282,9 @@
           urlPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
 
         function init(){
-          loadTrialOrder();
-
-          /*
-          getTrialOrder(function(orderObj){
-            getTrialData(function(dataObj){
-              displayData(orderObj, dataObj);
-            });
+          loadTrialOrder(function(result,result2){
+            displayData(result,result2);
           });
-          */
         }
 
         gadgets.util.registerOnLoadHandler(function(){
