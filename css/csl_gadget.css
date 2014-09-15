@@ -1,3 +1,7 @@
+.gadgets-gadget-title{
+	visibility: hidden;
+}
+
 
 .clinicalTrialGadget{
 	font-family: Arial;
@@ -52,7 +56,7 @@ div.view-home li.trial:active{
 }
 
 div.view-profile .icon-eye{
-	visibility: hidden;
+	display: none;
 }
 
 .icon-star{
@@ -62,11 +66,11 @@ div.view-profile .icon-eye{
 }
 
 div.view-profile .icon-star{
-	visibility: hidden;
+	display: none;
 }
 
 div.view-profile li.trial-hidden {
-	visibility: hidden;
+	display: none;
 }
 
 div.view-home li.trial-hidden {
@@ -115,9 +119,12 @@ div.view-home li.trial-hidden:hover{
 
 div.view-home .title a{
 	color:#267196;
-	padding-right: 50px;
 	pointer-events: none;
 	cursor: default;
+}
+
+div.view-home .title{
+	padding-right: 60px;
 }
 
 .detail{

@@ -188,7 +188,8 @@
               renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v);
             }
           }
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 60);
+          
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 80);
         }
 
         function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible){
