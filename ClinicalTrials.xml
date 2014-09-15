@@ -379,9 +379,9 @@
             $trial.removeClass("trial-hidden");
           } else {
             $trial.addClass("trial-hidden");
-            if ( $trial.hasClass("trial-feat")){
+            if ( $trial.hasClass("trial-feature")){
               $trial.find(".icon-star").attr("src",urlPath + "images/star_empty.png");
-              $trial.removeClass("trial-feat");
+              $trial.removeClass("trial-feature");
             } 
           }
         }
