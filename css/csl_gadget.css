@@ -151,3 +151,13 @@ div.view-home .title{
 .site{
 	color:#777777;
 }
+
+#show{
+	display:none;
+}
+
+#clear{
+	display:none;
+}
+
+
