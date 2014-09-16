@@ -119,7 +119,7 @@
                       trials = trialObj.slice();
                       for(var i=0; i<newTrials.length; i++){
                         var trial = {};
-                        trial.i = '' + newTrials[i];
+                        trial.i = newTrials[i] + '';
                         trial.f = 0;
                         trial.v = 1;
                         trials.push(trial);
@@ -160,11 +160,11 @@
 
         function findNewTrial(dbArr, apiArr){
           var hash = {}, diffArr = [];
-          for(var i=0;i<dbArr.length;i++){
+          for(var i=0; i<dbArr.length; i++){
             hash[dbArr[i].i] = true;
           }
 
-          for(var i=0;i<apiArr.length;i++){
+          for(var i=0; i<apiArr.length; i++){
             if(hash[apiArr[i].id] !== true){
               diffArr.push(apiArr[i].id);
             }
@@ -182,19 +182,34 @@
         }
 
         function displayData(orderList, jsonObj, renderAll){
+          var displayCount = 3;
           for(var i=0; i<orderList.length; i++){
             var t = findTrial(orderList[i].i,jsonObj);
             if(t !== null && (renderAll || orderList[i].v === 1)){
               renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v, orderList[i].f);
             }
           }
-          
+/*
+          if(orderList.length > 2){
+            $("<div id='showhide' class='collapse'><span>Show more</span></div>").appendTo(".clinicalTrialGadget");
+            $("<img>",{src:"http://profilesstage.sc-ctsi.org/Framework/Images/expandRound.gif"}).appendTo("#showhide");
+            $("#trial-list li:gt(1)").hide(); 
+          }
+*/
           gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 80);
         }
 
         function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible, isFeature){
           var li, div;
-          li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list"));
+
+          if(isFeature === 1){
+            alert('a');
+            li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list-feat")); 
+          }
+          else {  
+            li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list"));
+          }
+
           if(isVisible === 0) li.addClass("trial-hidden");
           $("<img/>",{class:"icon-eye", src:ENV_LOCAL_URL + "/images/eye_icon.png"}).appendTo(li);
 
@@ -216,6 +231,10 @@
           $("<span/>",{class:"site", text:" | " + siteStat}).appendTo(div);
         }
 
+        function adjustHeight(){
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 80);
+        }
+
       </script>
     ]]>
   </Content>
@@ -229,7 +248,25 @@
             displayData(result, result2, false);
           });
         }
-        gadgets.util.registerOnLoadHandler(init);
+        gadgets.util.registerOnLoadHandler(function(){
+          $(document).ready(function() {
+            init();
+
+            $(".view-profile").on("click", "#showhide", function(){
+              if($(this).hasClass("collapse")){
+                $("#trial-list li").show();
+                $(this).removeClass("collapse");
+                $("showhide span").text("Show less");
+                adjustHeight();
+              } else {
+                $("#trial-list li:gt(1)").hide();
+                $(this).addClass("collapse");
+                adjustHeight();
+              }
+              
+            });
+          });
+        });
       
       </script>
 
@@ -240,8 +277,11 @@
             <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
             <span class="HeaderTitle">Active Clinical Trials</span>
           </div>
+          <ul id="trial-list-feat">
+          </ul>
           <ul id="trial-list">
           </ul>
+
         </div> 
       </div>
     ]]>
@@ -265,6 +305,18 @@
 
           $(document).ready(function() {
 
+            $("#trial-list-feat").sortable({
+              axis: "y",
+              scroll: true,
+
+              start: function( event, ui ) {
+                ui.placeholder.height(ui.item.height());
+              },
+              update: function(event, ui) {
+                saveTrialStatus();
+              }              
+            });
+            
             $("#trial-list").sortable({
               axis: "y",
               scroll: true,
@@ -272,7 +324,6 @@
               start: function( event, ui ) {
                 ui.placeholder.height(ui.item.height());
               },
-
               update: function(event, ui) {
                 saveTrialStatus();
               },
@@ -329,12 +380,22 @@
         });
 
         function saveTrialStatus(){
+          var featItem = $("ul#trial-list-feat li.trial");
           var listItem = $("ul#trial-list li.trial");
           var trials = [];
+
+          featItem.each(function() {
+            trial = {};
+            trial.i = $(this).attr("id");
+            trial.f = 1
+            trial.v = 1
+            trials.push(trial);
+          });
+
           listItem.each(function() {
             trial = {};
             trial.i = $(this).attr("id");
-            trial.f = $(this).attr("class").indexOf("trial-feature") > 0 ? 1 : 0;
+            trial.f = 0
             trial.v = $(this).attr("class").indexOf("trial-hidden") > 0 ? 0 : 1;
             trials.push(trial);
           });
@@ -417,17 +478,17 @@
 
         function moveTrialToEndOfFeatureList( $trial, $trialLastVisible ) {
           if( $trialLastVisible === null || !( $trial.hasClass( "trial-feature" ) ) ){
-            $( "#trial-list" ).prepend($trial);
+            $("#trial-list-feat").prepend($trial);
           }
           else if( !( $trial.is( $trialLastVisible ) ) ){
-            $trial.insertAfter( $trialLastVisible );
+            $("#trial-list").prepend($trial);
           }
         }
 
         function findLastFeatureTrial(){
           var $trialLastFeature = null;
-          if($( "#trial-list" ).children( ".trial-feature:last").length > 0)
-            $trialLastFeature = $( "#trial-list" ).children( ".trial-feature:last");
+          if($("#trial-list").children(".trial-feature:last").length > 0)
+            $trialLastFeature = $("#trial-list").children(".trial-feature:last");
           return $trialLastFeature;
         }
 
@@ -440,6 +501,8 @@
             <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
             <span class="HeaderTitle">Active Clinical Trials</span>
           </div>
+          <ul id="trial-list-feat">
+          </ul>
           <ul id="trial-list">
           </ul>
           <button id="show" type="button">show userdata</button>

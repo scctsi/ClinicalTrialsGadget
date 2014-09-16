@@ -17,10 +17,17 @@
 
 }
 
-ul#trial-list{
+ul#trial-list, ul#trial-list-feat{
 	list-style-type: none;
-	margin: 5px;
 	padding: 0;
+}
+
+ul#trial-list-feat{
+	margin: 5px;
+}
+
+ul#trial-list{
+	margin: 0px 5px 5px 5px;
 }
 
 li.trial{
@@ -40,14 +47,12 @@ div.view-home li.trial{
 	cursor: -webkit-grab;
 }
 
-
 div.view-home li.trial:active{
 	border: 1px dotted #d6d6d6;
 	cursor: grabbing;
 	cursor: -moz-grabbing;
 	cursor: -webkit-grabbing;
 }
-
 
 .icon-eye{
 	float: right;
@@ -152,6 +157,15 @@ div.view-home .title{
 	color:#777777;
 }
 
+#showhide{
+position: relative;
+font-size: 13px;
+float: right;
+top :20px ;
+color: #4d8ba9;	
+}
+
+/*
 #show{
 	display:none;
 }
@@ -159,5 +173,4 @@ div.view-home .title{
 #clear{
 	display:none;
 }
-
-
+*/
