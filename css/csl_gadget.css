@@ -157,14 +157,18 @@ div.view-home .title{
 }
 
 #showhide{
-position: relative;
-font-size: 15px;
-float: right;
-top :20px ;
-color: #4d8ba9;	
+	position: relative;
+	font-size: 15px;
+	float: right;
+	top :20px ;
+	color: #4d8ba9; 	
 }
 
-/*
+#showhide:hover{
+	text-decoration: underline; 
+	cursor: pointer; 	
+}
+
 #show{
 	display:none;
 }
@@ -172,4 +176,3 @@ color: #4d8ba9;
 #clear{
 	display:none;
 }
-*/
