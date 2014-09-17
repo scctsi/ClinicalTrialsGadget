@@ -230,7 +230,7 @@
     ]]>
   </Content>
 
-  <Content type="html" view="profile" preferred_width="700">
+  <Content type="html" view="profile" preferred_width="670">
     <![CDATA[     
       <script type="text/javascript">
 
