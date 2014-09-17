@@ -205,7 +205,11 @@
           var textToInsert = '<li id=' + pid + ' class="trial' + (isVisible === 0 ? " trial-hidden" : "") + (isFeature === 1 ? " trial-feature" : "") + '">';
             textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png">';
             textToInsert += '<img class="icon-star" src="' + ENV_LOCAL_URL + '/images/' + (isFeature === 1 ? "star_filled" : "star_empty") + '.png">';
-            textToInsert += '<div class="title"><a href="' + url + '" target="_blank">' + title + '</a></div>';
+            if(isFeature === 1) {
+              textToInsert += '<img class="icon-feat" src="' + ENV_LOCAL_URL + '/images/r_star.png">';
+              textToInsert += '<span class="feat-text">FEATURED:</span>';
+            }
+            textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
             textToInsert += '<div class="detail"><img class="statImg" src="' + ENV_LOCAL_URL + getImgByStat(recStat) + '">';
             textToInsert += '<span class="status">' + recStat + '</span>';
             textToInsert += '<span class="disease"> | DISEASE AREA: ' + disease + '</span>';

@@ -119,6 +119,7 @@ div.view-home li.trial-hidden:hover{
 	font-size: 15px;
 	font-weight: bold;
 	margin: 0px;
+	text-decoration: none;
 }
 
 div.view-home .title a{
@@ -157,13 +158,22 @@ div.view-home .title{
 }
 
 div.view-profile .icon-feat{
+	float: left;
 	position: relative;
 	margin-right: 6px;
-	bottom: -2px;
+	bottom: 1px;
 }
 
-div.view-home .icon-feat{
+div.view-home .icon-feat,
+div.view-home .feat-text{
 	display: none;
+}
+
+.feat-text{
+	float:left;
+	font-size: 15px;
+	color:#990000;
+	margin-right: 4px;
 }
 
 #showhide{
@@ -178,7 +188,7 @@ div.view-home .icon-feat{
 	text-decoration: underline; 
 	cursor: pointer; 	
 }
-/*
+
 #show{
 	display:none;
 }
@@ -186,4 +196,3 @@ div.view-home .icon-feat{
 #clear{
 	display:none;
 }
-*/
