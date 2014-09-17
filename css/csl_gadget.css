@@ -53,20 +53,24 @@ div.view-home li.trial:active{
 	cursor: -webkit-grabbing;
 }
 
-.icon-eye{
+.icon-wrap{
 	float: right;
+	padding: 2px;
+	cursor: pointer;
+}
+
+.icon-eye{
+	padding: 2px;
+	cursor: pointer;
+}
+
+.icon-star{
 	padding: 2px;
 	cursor: pointer;
 }
 
 div.view-profile .icon-eye{
 	display: none;
-}
-
-.icon-star{
-	float: right;
-	padding: 2px;
-	cursor: pointer;
 }
 
 div.view-profile .icon-star{
@@ -127,6 +131,8 @@ div.view-home .title a{
 	pointer-events: none;
 	cursor: default;
 }
+
+
 
 div.view-home .title{
 	padding-right: 60px;

@@ -203,8 +203,8 @@
 
         function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible, isFeature){
           var textToInsert = '<li id=' + pid + ' class="trial' + (isVisible === 0 ? " trial-hidden" : "") + (isFeature === 1 ? " trial-feature" : "") + '">';
-            textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png">';
-            textToInsert += '<img class="icon-star" src="' + ENV_LOCAL_URL + '/images/' + (isFeature === 1 ? "star_filled" : "star_empty") + '.png">';
+            textToInsert += '<div class="icon-wrap"><img class="icon-star" src="' + ENV_LOCAL_URL + '/images/' + (isFeature === 1 ? "star_filled" : "star_empty") + '.png">';
+            textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png"></div>';
             if(isFeature === 1) {
               textToInsert += '<img class="icon-feat" src="' + ENV_LOCAL_URL + '/images/r_star.png">';
               textToInsert += '<span class="feat-text">FEATURED:</span>';
