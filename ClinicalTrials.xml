@@ -192,8 +192,11 @@
           
           if(gadgets.views.getCurrentView().name_ === "profile"){
             if($("#trial-list-full li:not(.trial-hidden)").length > 2){
-              $("<div id='showhide' class='collapse'><span>Show more</span></div>").appendTo(".clinicalTrialGadget");
-              $("<img>",{src:"http://profilesstage.sc-ctsi.org/Framework/Images/expandRound.gif"}).appendTo("#showhide");
+              var textToInsert = '<div id="showhide" class="collapse">';
+              textToInsert += '<span><strong>&nbsp;...</strong><span>Show more</span></span>';
+              textToInsert += '<img src="http://profiles.sc-ctsi.org/Framework/Images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
+
+              $(".clinicalTrialGadget").append(textToInsert);
               $("#trial-list-full li:gt(1)").hide();
             }
           }
@@ -202,7 +205,7 @@
         }
 
         function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible, isFeature){
-          var textToInsert = '<li id=' + pid + ' class="trial' + (isVisible === 0 ? " trial-hidden" : "") + (isFeature === 1 ? " trial-feature" : "") + '">';
+          var textToInsert = '<li id=t' + pid + ' class="trial' + (isVisible === 0 ? " trial-hidden" : "") + (isFeature === 1 ? " trial-feature" : "") + '">';
             textToInsert += '<div class="icon-wrap"><img class="icon-star" src="' + ENV_LOCAL_URL + '/images/' + (isFeature === 1 ? "star_filled" : "star_empty") + '.png">';
             textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png"></div>';
             if(isFeature === 1) {
@@ -248,13 +251,14 @@
               if($(this).hasClass("collapse")){
                 $("#trial-list-full li").show();
                 $(this).removeClass("collapse");
-                $("#showhide span").text("Show less");
+                alert($("#showhide span").children(1).text());
+                $("#showhide span:last-child").text("Show less");
                 $("#showhide img").attr("src","http://profilesstage.sc-ctsi.org/Framework/Images/collapseRound.gif");
                 adjustHeight();
               } else {
                 $("#trial-list-full li:gt(1)").hide();
                 $(this).addClass("collapse");
-                $("#showhide span").text("Show more");
+                $("#showhide span:last-child").text("Show more");
                 $("#showhide img").attr("src","http://profilesstage.sc-ctsi.org/Framework/Images/expandRound.gif");
                 adjustHeight();
               }
@@ -384,7 +388,7 @@
 
           featItem.each(function() {
             trial = {};
-            trial.i = $(this).attr("id");
+            trial.i = $(this).attr("id").slice(1);
             trial.f = 1
             trial.v = 1
             trials.push(trial);
@@ -392,7 +396,7 @@
 
           listItem.each(function() {
             trial = {};
-            trial.i = $(this).attr("id");
+            trial.i = $(this).attr("id").slice(1);
             trial.f = 0
             trial.v = $(this).attr("class").indexOf("trial-hidden") > 0 ? 0 : 1;
             trials.push(trial);
