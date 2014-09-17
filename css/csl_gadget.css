@@ -156,6 +156,16 @@ div.view-home .title{
 	color:#777777;
 }
 
+div.view-profile .icon-feat{
+	position: relative;
+	margin-right: 6px;
+	bottom: -2px;
+}
+
+div.view-home .icon-feat{
+	display: none;
+}
+
 #showhide{
 	position: relative;
 	font-size: 15px;
@@ -168,7 +178,7 @@ div.view-home .title{
 	text-decoration: underline; 
 	cursor: pointer; 	
 }
-
+/*
 #show{
 	display:none;
 }
@@ -176,3 +186,4 @@ div.view-home .title{
 #clear{
 	display:none;
 }
+*/

@@ -38,22 +38,22 @@
         }
 
         function getOrderNumByStat(status){
-          switch(status){
-            case 'Recruiting':
+          switch(status.toLowerCase()){
+            case 'recruiting':
               return 1;
-            case 'Enrolling by invitation':
+            case 'enrolling by invitation':
               return 2;
-            case 'Active, not recruiting':
+            case 'active, not recruiting':
               return 3;
-            case 'Not yet recruiting':
+            case 'not yet recruiting':
               return 4;
-            case 'Completed':
+            case 'completed':
               return 5;
-            case 'Suspended':
+            case 'suspended':
               return 6;
-            case 'Terminated':
+            case 'terminated':
               return 7;
-            case 'Withdrawn':
+            case 'withdrawn':
               return 8;
             default:
               return 9;
@@ -107,7 +107,7 @@
                   if($.isEmptyObject(viewer)){
                     for(var i=0; i<apiData.response.length; i++){
                       var trial = {};
-                      trial.i = '' + apiData.response[i].id;
+                      trial.i = apiData.response[i].id + '';
                       trial.f = 0;
                       trial.v = 1;
                       trials.push(trial);
@@ -181,11 +181,11 @@
           return null;
         }
 
-        function displayData(orderList, jsonObj, renderAll, callback){
+        function displayData(orderList, jsonObj, showVisible, callback){
           var displayCount = 3;
           for(var i=0; i<orderList.length; i++){
             var t = findTrial(orderList[i].i,jsonObj);
-            if(t !== null && (renderAll || orderList[i].v === 1)){
+            if(t !== null && (showVisible || orderList[i].v === 1)){
               renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v, orderList[i].f);
             }
           }
@@ -202,34 +202,20 @@
         }
 
         function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible, isFeature){
-          var li, div;
-
-          if(isFeature === 1){
-            li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list-feat")); 
-          }
-          else {  
-            li = $("<li/>",{id:pid, class:"trial"}).appendTo($("#trial-list"));
-          }
-
-          if(isVisible === 0) li.addClass("trial-hidden");
-          $("<img/>",{class:"icon-eye", src:ENV_LOCAL_URL + "/images/eye_icon.png"}).appendTo(li);
-
-          if(isFeature === 1){
-            li.addClass("trial-feature");
-            $("<img/>",{class:"icon-star", src:ENV_LOCAL_URL + "/images/star_filled.png"}).appendTo(li);
-          } else {
-            $("<img/>",{class:"icon-star", src:ENV_LOCAL_URL + "/images/star_empty.png"}).appendTo(li);
-          }
-          
-          $("<div/>",{class:"title"}).prepend($("<a/>",{id:pid, href:$(url).attr("href"), target:"_blank", text:title}))
-          .appendTo(li);
-          
-          div = $("<div/>",{class:"detail"}).appendTo(li);
-          if(recStat.length) $("<img/>",{class:"statImg", src:ENV_LOCAL_URL + getImgByStat(recStat)}).appendTo(div); 
-          
-          $("<span/>",{class:"status", text:recStat}).appendTo(div);
-          $("<span/>",{class:"disease", text:" | DISEASE AREA: " + disease}).appendTo(div);
-          $("<span/>",{class:"site", text:" | " + siteStat}).appendTo(div);
+          var textToInsert = '<li id=' + pid + ' class="trial' + (isVisible === 0 ? " trial-hidden" : "") + (isFeature === 1 ? " trial-feature" : "") + '">';
+            textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png">';
+            textToInsert += '<img class="icon-star" src="' + ENV_LOCAL_URL + '/images/' + (isFeature === 1 ? "star_filled" : "star_empty") + '.png">';
+            textToInsert += '<div class="title"><a href="' + url + '" target="_blank">' + title + '</a></div>';
+            textToInsert += '<div class="detail"><img class="statImg" src="' + ENV_LOCAL_URL + getImgByStat(recStat) + '">';
+            textToInsert += '<span class="status">' + recStat + '</span>';
+            textToInsert += '<span class="disease"> | DISEASE AREA: ' + disease + '</span>';
+            textToInsert += '<span class="site"> | ' + siteStat + '</span></div>';
+            
+            if(isFeature === 1){
+              $("#trial-list-feat").append(textToInsert);
+            } else {
+              $("#trial-list").append(textToInsert);
+            }
         }
 
         function adjustHeight(){
@@ -256,7 +242,6 @@
 
             $(".view-profile").on("click", "#showhide", function(){
               if($(this).hasClass("collapse")){
-                adjustHeight();
                 $("#trial-list-full li").show();
                 $(this).removeClass("collapse");
                 $("#showhide span").text("Show less");
@@ -280,7 +265,7 @@
       <div class="view-profile">
         <div class="clinicalTrialGadget">
           <div>
-            <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
+            <span class="HeaderImage"><img src="images/microscope_iconRY.png"></span>
             <span class="HeaderTitle">Active Clinical Trials</span>
           </div>
           <div id="trial-list-full">
@@ -310,16 +295,17 @@
 
         gadgets.util.registerOnLoadHandler(function(){
 
-          $(document).ready(function() {
+          $(document).ready(function(){
 
             $("#trial-list-feat").sortable({
               axis: "y",
               scroll: true,
 
-              start: function( event, ui ) {
+              start: function(event, ui){
                 ui.placeholder.height(ui.item.height());
               },
-              update: function(event, ui) {
+
+              update: function(event, ui){
                 saveTrialStatus();
               }              
             });
@@ -331,6 +317,7 @@
               start: function( event, ui ) {
                 ui.placeholder.height(ui.item.height());
               },
+
               update: function(event, ui) {
                 saveTrialStatus();
               },
@@ -505,15 +492,17 @@
       <div class="view-home">
         <div class="clinicalTrialGadget">
           <div>
-            <span class="HeaderImage"><img src="images/microscope_iconR.png"></span>
+            <span class="HeaderImage"><img src="images/microscope_iconRY.png"></span>
             <span class="HeaderTitle">Active Clinical Trials</span>
           </div>
           <ul id="trial-list-feat">
           </ul>
           <ul id="trial-list">
           </ul>
-          <button id="show" type="button">show userdata</button>
-          <button id="clear" type="button">clear userdata</button>
+          <div id="debug2">
+            <button id="show" type="button">show userdata</button>
+            <button id="clear" type="button">clear userdata</button>
+          </div>
         </div>
       </div>
     ]]>
