@@ -210,7 +210,7 @@
               textToInsert += '<span class="feat-text">FEATURED:</span>';
             }
             textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
-            textToInsert += '<div class="detail"><img class="statImg" src="' + ENV_LOCAL_URL + getImgByStat(recStat) + '">';
+            textToInsert += '<div class="detail"><img class="statImg' + (recStat !== null ? '" src="' + ENV_LOCAL_URL + getImgByStat(recStat) : "") + '">';
             textToInsert += '<span class="status">' + recStat + '</span>';
             textToInsert += '<span class="disease"> | DISEASE AREA: ' + disease + '</span>';
             textToInsert += '<span class="site"> | ' + siteStat + '</span></div>';
