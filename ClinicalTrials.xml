@@ -15,7 +15,7 @@
       <link rel="stylesheet" type="text/css" href="css/csl_gadget.css">
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
-      <script type="text/javascript" src="http://s3.amazonaws.com/clinical-trials-gadget/xml/js/environment.js" ></script>
+      <script type="text/javascript" src="js/environment.js" ></script>
       <script type="text/javascript" src="js/os.js" ></script>
       <script type="text/javascript">
 
@@ -191,7 +191,7 @@
           }
           
           if(gadgets.views.getCurrentView().name_ === "profile"){
-            if(orderList.length > 2){
+            if($("#trial-list-full li:not(.trial-hidden)").length > 2){
               $("<div id='showhide' class='collapse'><span>Show more</span></div>").appendTo(".clinicalTrialGadget");
               $("<img>",{src:"http://profilesstage.sc-ctsi.org/Framework/Images/expandRound.gif"}).appendTo("#showhide");
               $("#trial-list-full li:gt(1)").hide();
@@ -210,7 +210,7 @@
               textToInsert += '<span class="feat-text">FEATURED:</span>';
             }
             textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
-            textToInsert += '<div class="detail"><img class="statImg' + (recStat !== null ? '" src="' + ENV_LOCAL_URL + getImgByStat(recStat) : "") + '">';
+            textToInsert += '<div class="detail"><img class="statImg' + (recStat ? '" src="' + ENV_LOCAL_URL + getImgByStat(recStat) : "") + '">';
             textToInsert += '<span class="status">' + recStat + '</span>';
             textToInsert += '<span class="disease"> | DISEASE AREA: ' + disease + '</span>';
             textToInsert += '<span class="site"> | ' + siteStat + '</span></div>';
@@ -496,8 +496,8 @@
       <div class="view-home">
         <div class="clinicalTrialGadget">
           <div>
-            <span class="HeaderImage"><img src="images/microscope_iconRY.png"></span>
-            <span class="HeaderTitle">Active Clinical Trials</span>
+            <span class="HeaderImage"></span>
+            <span class="HeaderTitle"></span>
           </div>
           <ul id="trial-list-feat">
           </ul>
