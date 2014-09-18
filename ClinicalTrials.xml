@@ -183,7 +183,7 @@
 
         function displayData(orderList, jsonObj, showVisible, callback){
           var displayCount = 2;
-          
+
           for(var i=0; i<orderList.length; i++){
             var t = findTrial(orderList[i].i,jsonObj);
             if(t !== null && (showVisible || orderList[i].v === 1)){
@@ -194,9 +194,9 @@
           if(gadgets.views.getCurrentView().name_ === "profile"){
             if($("#trial-list-full li:not(.trial-hidden)").length > displayCount){
               $("#trial-list-full li:gt(1)").hide();
-              var textToInsert = '<div class="plusbutton"><span> <strong>...</strong> Show more</span> <img src="http://profiles.sc-ctsi.org/Framework/Images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
+              var textToInsert = '<div class="plusbutton"><span> <strong>...</strong> Show more</span> <img src="' + ENV_LOCAL_URL + '/images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
 
-              textToInsert += '<div class="minusbutton" style="display: none;"><span>Show less</span> <img src="http://profiles.sc-ctsi.org/Framework/Images/collapseRound.gif" alt="-" style="vertical-align:top"></div>';
+              textToInsert += '<div class="minusbutton" style="display: none;"><span>Show less</span> <img src="' + ENV_LOCAL_URL + '/images/collapseRound.gif" alt="-" style="vertical-align:top"></div>';
               
               $(".clinicalTrialGadget").append(textToInsert);
             }
@@ -270,7 +270,7 @@
       <div class="view-profile">
         <div class="clinicalTrialGadget">
           <div class="header-title">
-            <span class="header-image"><img src="images/microscope_iconRY.png"></span>
+            <span class="header-image"><img src="images/magnifiying_icon_Red.png"></span>
             <span class="header-text">Active Clinical Trials</span>
           </div>
           <div id="trial-list-full">
