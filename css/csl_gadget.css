@@ -1,15 +1,15 @@
-.gadgets-gadget-title{
-	display:none;
-}
-
 .clinicalTrialGadget{
 	font-family: Arial;
 }
 
-.HeaderTitle{
+.header-title{
+	margin: 7px 0 0 7px;
+}
+
+.header-text{
 	position: relative;
 	bottom: 8px;
-	padding: 5px;
+	padding: 2px;
 	color:#990000;
 	font-size: 18px;
 	font-weight: bold;
@@ -21,7 +21,7 @@ ul#trial-list, ul#trial-list-feat{
 }
 
 ul#trial-list-feat{
-	margin: 5px 5px 1px 5px;
+	margin: 0px 5px 1px 5px;
 }
 
 ul#trial-list{
@@ -34,7 +34,7 @@ li.trial{
 }
 
 div.view-home li.trial:hover{
-	background: #d6d6d6;
+	background: #EEE;
 }
 
 div.view-home li.trial{
@@ -179,15 +179,16 @@ div.view-home .feat-text{
 	margin-right: 4px;
 }
 
-#showhide{
-	position: relative;
-	font-size: 15px;
-	float: right;
-	top :20px ;
-	color: #4d8ba9; 	
+.plusbutton, .minusbutton {
+	position: absolute;
+	bottom: 20px;
+	right: 0;
+	margin: 0;
+	padding: 0 20px 0 9px;
+	color: #4d8ba9;
 }
 
-#showhide:hover{
+.plusbutton:hover, .minusbutton:hover{
 	text-decoration: underline; 
 	cursor: pointer; 	
 }

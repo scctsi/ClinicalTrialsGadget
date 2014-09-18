@@ -182,7 +182,8 @@
         }
 
         function displayData(orderList, jsonObj, showVisible, callback){
-          var displayCount = 3;
+          var displayCount = 2;
+          
           for(var i=0; i<orderList.length; i++){
             var t = findTrial(orderList[i].i,jsonObj);
             if(t !== null && (showVisible || orderList[i].v === 1)){
@@ -191,13 +192,13 @@
           }
           
           if(gadgets.views.getCurrentView().name_ === "profile"){
-            if($("#trial-list-full li:not(.trial-hidden)").length > 2){
-              var textToInsert = '<div id="showhide" class="collapse">';
-              textToInsert += '<span><strong>&nbsp;...</strong><span>Show more</span></span>';
-              textToInsert += '<img src="http://profiles.sc-ctsi.org/Framework/Images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
-
-              $(".clinicalTrialGadget").append(textToInsert);
+            if($("#trial-list-full li:not(.trial-hidden)").length > displayCount){
               $("#trial-list-full li:gt(1)").hide();
+              var textToInsert = '<div class="plusbutton"><span> <strong>...</strong> Show more</span> <img src="http://profiles.sc-ctsi.org/Framework/Images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
+
+              textToInsert += '<div class="minusbutton" style="display: none;"><span>Show less</span> <img src="http://profiles.sc-ctsi.org/Framework/Images/collapseRound.gif" alt="-" style="vertical-align:top"></div>';
+              
+              $(".clinicalTrialGadget").append(textToInsert);
             }
           }
 
@@ -215,8 +216,8 @@
             textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
             textToInsert += '<div class="detail"><img class="statImg' + (recStat ? '" src="' + ENV_LOCAL_URL + getImgByStat(recStat) : "") + '">';
             textToInsert += '<span class="status">' + recStat + '</span>';
-            textToInsert += '<span class="disease"> | DISEASE AREA: ' + disease + '</span>';
-            textToInsert += '<span class="site"> | ' + siteStat + '</span></div>';
+            textToInsert += '<span class="disease"> | ' + disease + ' | </span>';
+            textToInsert += '<span class="site">' + siteStat + '</span></div>';
             
             if(isFeature === 1){
               $("#trial-list-feat").append(textToInsert);
@@ -234,7 +235,8 @@
   </Content>
 
   <Content type="html" view="profile" preferred_width="670">
-    <![CDATA[     
+    <![CDATA[
+      <style> body{background-color: #EEEEEE;}</style>
       <script type="text/javascript">
 
         function init(){
@@ -247,34 +249,29 @@
           $(document).ready(function() {
             init();
 
-            $(".view-profile").on("click", "#showhide", function(){
-              if($(this).hasClass("collapse")){
-                $("#trial-list-full li").show();
-                $(this).removeClass("collapse");
-                alert($("#showhide span").children(1).text());
-                $("#showhide span:last-child").text("Show less");
-                $("#showhide img").attr("src","http://profilesstage.sc-ctsi.org/Framework/Images/collapseRound.gif");
-                adjustHeight();
-              } else {
-                $("#trial-list-full li:gt(1)").hide();
-                $(this).addClass("collapse");
-                $("#showhide span:last-child").text("Show more");
-                $("#showhide img").attr("src","http://profilesstage.sc-ctsi.org/Framework/Images/expandRound.gif");
-                adjustHeight();
-              }
-              
+            $(".view-profile").on("click", ".plusbutton", function(){
+              $('#trial-list-full li:gt(1)').toggle();
+              $('.plusbutton').hide();
+              $('.minusbutton').show();
+              adjustHeight();
+            });
+   
+            $(".view-profile").on("click", ".minusbutton", function(){
+              $('#trial-list-full li:gt(1)').toggle();
+              $('.plusbutton').show();
+              $('.minusbutton').hide();
+              adjustHeight();
             });
           });
         });
-      
-      </script>
 
+      </script>
       <div id='debug'></div>
       <div class="view-profile">
         <div class="clinicalTrialGadget">
-          <div>
-            <span class="HeaderImage"><img src="images/microscope_iconRY.png"></span>
-            <span class="HeaderTitle">Active Clinical Trials</span>
+          <div class="header-title">
+            <span class="header-image"><img src="images/microscope_iconRY.png"></span>
+            <span class="header-text">Active Clinical Trials</span>
           </div>
           <div id="trial-list-full">
             <ul id="trial-list-feat">
@@ -499,9 +496,9 @@
       <div id="debug"></div>
       <div class="view-home">
         <div class="clinicalTrialGadget">
-          <div>
-            <span class="HeaderImage"></span>
-            <span class="HeaderTitle"></span>
+          <div class="header-title">
+            <span class="header-image"></span>
+            <span class="header-text"></span>
           </div>
           <ul id="trial-list-feat">
           </ul>
