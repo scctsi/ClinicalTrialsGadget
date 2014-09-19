@@ -55,7 +55,6 @@ div.view-home li.trial:active{
 .icon-wrap{
 	float: right;
 	padding: 2px;
-	cursor: pointer;
 }
 
 .icon-eye{
@@ -86,33 +85,25 @@ div.view-home li.trial-hidden {
 }
 
 div.view-home li.trial-hidden div.title a{
-    color: #d1d1d1;
+    color: #CCCCCC;
 }
 
-div.view-home li.trial-hidden div.detail .status{
-    color: #d1d1d1;
+div.view-home li.trial-hidden div.detail span{
+    color: #CCCCCC;
 }
-
-div.view-home li.trial-hidden div.detail .disease{
-    color: #d1d1d1;
-}
-
-div.view-home li.trial-hidden div.detail .site{
-    color: #d1d1d1;
-}
-
+/*
 div.view-home li.trial-hidden div.detail .statImg{
     visibility: hidden;
 }
-
+*/
 div.view-home li.trial-hidden img.icon-star {
-    visibility: hidden;
+    display: none;
 }
-
+/*
 div.view-home li.trial-hidden img.icon-eye {
     -webkit-filter: opacity(50%);
 }
-
+*/
 div.view-home li.trial-hidden:hover{
 	background-color: transparent;
 }
@@ -121,7 +112,6 @@ div.view-home li.trial-hidden:hover{
 	color:#267196;
 	font-size: 13px;
 	font-weight: bold;
-	margin: 0px;
 	text-decoration: none;
 }
 
@@ -164,7 +154,6 @@ div.view-profile .icon-feat{
 	float: left;
 	position: relative;
 	margin-right: 5px;
-	bottom: 1px;
 }
 
 div.view-home .icon-feat,
@@ -174,9 +163,11 @@ div.view-home .feat-text{
 
 .feat-text{
 	float:left;
+	position: relative;
 	font-size: 13px;
 	color:#990000;
 	margin-right: 4px;
+	bottom: -2px;
 }
 
 .plusbutton, .minusbutton {

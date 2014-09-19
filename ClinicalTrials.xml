@@ -19,21 +19,21 @@
       <script type="text/javascript" src="js/os.js" ></script>
       <script type="text/javascript">
 
-        function getImgByStat(status){
+        function getImgUrlByStat(status, isVisible){
           switch(status.toLowerCase()){
             case 'recruiting':
             case 'enrolling by invitation':
-              return '/images/check_icon.png';
+              return ENV_LOCAL_URL + "/images/" + (isVisible ? "icon_check.png" : "grey_icon_check.png");
             case 'active, not recruiting':
             case 'not yet recruiting':
-              return '/images/yellow_triangle_icon.png';
+              return ENV_LOCAL_URL + '/images/' + (isVisible ? 'icon_triangle.png' : 'grey_icon_triangle.png');
             case 'completed':
             case 'suspended':
             case 'terminated':
             case 'withdrawn':
-              return '/images/X_icon.png';
+              return ENV_LOCAL_URL + '/images/' + (isVisible ? 'icon_x.png' : 'grey_icon_x.png');
             default:
-              return null;
+              return ENV_LOCAL_URL + '/images/filler.png';
           }          
         }
 
@@ -66,7 +66,7 @@
             fullname = result.jsonld['foaf:firstName'] + ' ' + result.jsonld['foaf:lastName'];
 
             // for testing only
-            if(fullname === "chi kwan") fullname = "Linda Sher";
+            if(fullname === "chi kwan") fullname = "Agustin Garcia";
             if(callback)
               callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
           }); 
@@ -96,6 +96,7 @@
         }
 
         function loadTrialOrder(callback){
+
           getAPIData(function(apiData){
             getAppData(function(appData){
               if(!apiData.error && !appData.error){
@@ -181,12 +182,13 @@
           return null;
         }
 
-        function displayData(orderList, jsonObj, showVisible, callback){
+        function displayData(orderList, jsonObj, showHidden, callback){
+
           var displayCount = 2;
 
           for(var i=0; i<orderList.length; i++){
             var t = findTrial(orderList[i].i,jsonObj);
-            if(t !== null && (showVisible || orderList[i].v === 1)){
+            if(t !== null && (showHidden || orderList[i].v === 1)){
               renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v, orderList[i].f);
             }
           }
@@ -194,19 +196,23 @@
           if(gadgets.views.getCurrentView().name_ === "profile"){
             if($("#trial-list-full li:not(.trial-hidden)").length > displayCount){
               $("#trial-list-full li:gt(1)").hide();
-              var textToInsert = '<div class="plusbutton"><span> <strong>...</strong> Show more</span> <img src="' + ENV_LOCAL_URL + '/images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
+              var textToInsert = '<div class="plusbutton"><span><strong>...</strong> Show more</span><img src="' + ENV_LOCAL_URL + '/images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
 
-              textToInsert += '<div class="minusbutton" style="display: none;"><span>Show less</span> <img src="' + ENV_LOCAL_URL + '/images/collapseRound.gif" alt="-" style="vertical-align:top"></div>';
+              textToInsert += '<div class="minusbutton" style="display: none;"><span>Show less</span><img src="' + ENV_LOCAL_URL + '/images/collapseRound.gif" alt="-" style="vertical-align:top"></div>';
               
               $(".clinicalTrialGadget").append(textToInsert);
             }
           }
 
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 80);
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 60);
         }
 
         function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible, isFeature){
-          var textToInsert = '<li id=t' + pid + ' class="trial' + (isVisible === 0 ? " trial-hidden" : "") + (isFeature === 1 ? " trial-feature" : "") + '">';
+          var textToInsert, 
+            classTrialHidden = isVisible === 0 ? " trial-hidden" : "", 
+            classTrialFeature = isFeature === 1 ? " trial-feature" : "";
+
+            textToInsert = '<li id=t' + pid + ' class="trial' + classTrialHidden + classTrialFeature + '">';
             textToInsert += '<div class="icon-wrap"><img class="icon-star" src="' + ENV_LOCAL_URL + '/images/' + (isFeature === 1 ? "star_filled" : "star_empty") + '.png">';
             textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png"></div>';
             if(isFeature === 1) {
@@ -214,11 +220,11 @@
               textToInsert += '<span class="feat-text">FEATURED:</span>';
             }
             textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
-            textToInsert += '<div class="detail"><img class="statImg' + (recStat ? '" src="' + ENV_LOCAL_URL + getImgByStat(recStat) : "") + '">';
+            textToInsert += '<div class="detail"><img class="statImg" src="' + getImgUrlByStat(recStat, isVisible) + '">';
             textToInsert += '<span class="status">' + recStat + '</span>';
             textToInsert += '<span class="disease"> | ' + disease + ' | </span>';
             textToInsert += '<span class="site">' + siteStat + '</span></div>';
-            
+
             if(isFeature === 1){
               $("#trial-list-feat").append(textToInsert);
             } else {
@@ -227,7 +233,7 @@
         }
 
         function adjustHeight(){
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 80);
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 60);
         }
 
       </script>
@@ -435,9 +441,12 @@
         }
 
         function toggleTrialVisibility($trial){
+          var status = $trial.find(".status").text();
           if($trial.hasClass("trial-hidden")){
+            $trial.find(".statImg").attr("src", getImgUrlByStat(status, 1));
             $trial.removeClass("trial-hidden");
           } else {
+            $trial.find(".statImg").attr("src", getImgUrlByStat(status, 0));
             $trial.addClass("trial-hidden");
             if ( $trial.hasClass("trial-feature")){
               $trial.find(".icon-star").attr("src",urlPath + "images/star_empty.png");
