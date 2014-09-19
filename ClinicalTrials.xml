@@ -214,7 +214,12 @@
 
             textToInsert = '<li id=t' + pid + ' class="trial' + classTrialHidden + classTrialFeature + '">';
             textToInsert += '<div class="icon-wrap"><img class="icon-star" src="' + ENV_LOCAL_URL + '/images/' + (isFeature === 1 ? "star_filled" : "star_empty") + '.png">';
-            textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png"></div>';
+            
+            if(isVisible === 1)
+              textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png"></div>';
+            else
+              textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/grey_eye_icon.png"></div>';
+            
             if(isFeature === 1) {
               textToInsert += '<img class="icon-feat" src="' + ENV_LOCAL_URL + '/images/r_star.png">';
               textToInsert += '<span class="feat-text">FEATURED:</span>';
@@ -444,12 +449,14 @@
           var status = $trial.find(".status").text();
           if($trial.hasClass("trial-hidden")){
             $trial.find(".statImg").attr("src", getImgUrlByStat(status, 1));
+            $trial.find(".icon-eye").attr("src", ENV_LOCAL_URL + "/images/eye_icon.png");
             $trial.removeClass("trial-hidden");
           } else {
             $trial.find(".statImg").attr("src", getImgUrlByStat(status, 0));
+            $trial.find(".icon-eye").attr("src", ENV_LOCAL_URL + "/images/grey_eye_icon.png");
             $trial.addClass("trial-hidden");
             if ( $trial.hasClass("trial-feature")){
-              $trial.find(".icon-star").attr("src",urlPath + "images/star_empty.png");
+              $trial.find(".icon-star").attr("src",urlPath + "/images/star_empty.png");
               $trial.removeClass("trial-feature");
             } 
           }
