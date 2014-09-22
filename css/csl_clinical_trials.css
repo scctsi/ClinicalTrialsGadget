@@ -16,14 +16,18 @@ div.view-profile .header-title{
 	font-weight: bold;
 }
 
-.instruction{
+div.instruction{
 	font-size: 13px;
 	padding: 10px;
 	font-weight: bold;
 	color:#990000;
-	border-left: 1px dotted #d6d6d6;
-	border-right: 1px dotted #d6d6d6;
-	border-top: 1px dotted #d6d6d6;
+}
+
+
+div.instruction .img_star,
+div.instruction .img_eye{
+	position: relative;
+	bottom: -8px;
 }
 
 ul#trial-list, 

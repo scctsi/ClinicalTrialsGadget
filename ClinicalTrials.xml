@@ -97,17 +97,19 @@
         function loadTrialList(callback){
           getAPIData(function(api_data){
             getAppData(function(db_data){
+
               if(!api_data.error && !db_data.error){
                 var viewer = os.osapi.getViewerFromResult(db_data);
-                var trials = [], apiTrialList, dbTrialList, newTrialIds, index;
+                var trials = [], trial = {}, apiTrialList, dbTrialList, newTrials, index;
 
                 if(api_data.count){
+                  //gadgets.orng.showGadget();
                   apiTrialList = api_data.response;
-                  sortTrials(apiTrialList);
-                
-                  if($.isEmptyObject(viewer)){    
+                  
+                  if($.isEmptyObject(viewer)){
+                    sortTrials(apiTrialList);
                     for(var i=0; i<apiTrialList.length; i++){
-                      var trial = {};
+                      trial = {};
                       trial.i = apiTrialList[i].id + '';
                       trial.f = 0;
                       trial.v = 1;
@@ -115,13 +117,14 @@
                     }
                   } else {
                     dbTrialList = JSON.parse(viewer.ct_data);
-                    newTrialIds = findNewTrialIds(dbTrialList, apiTrialList)
-                    if(newTrialIds.length){
+                    newTrials = findNewTrials(dbTrialList, apiTrialList);
+                    if(newTrials.length){
                       trials = dbTrialList.slice();
                       index = findIndexOfFirstHiddenTrial(trials);
-                      for(var i=0; i<newTrialIds.length; i++){
-                        var trial = {};
-                        trial.i = newTrialIds[i] + '';
+                      sortTrials(newTrials);
+                      for(var i=0; i<newTrials.length; i++){
+                        trial = {};
+                        trial.i = newTrials[i].id + '';
                         trial.f = 0;
                         trial.v = 1;
                         (index === -1) ? trials.push(trial) : trials.splice(index, 0, trial);
@@ -135,6 +138,7 @@
                       'appId':'@app',
                       'data':{'ct_data':JSON.stringify(trials)}
                     }).execute(function(response){
+                      // display updated list
                       if(callback)
                         callback(trials, apiTrialList);
                     });  
@@ -158,7 +162,7 @@
           }
         }
 
-        function findNewTrialIds(dbTrialList, apiTrialList){
+        function findNewTrials(dbTrialList, apiTrialList){
           var hash = {}, diff = [];
           for(var i=0; i<dbTrialList.length; i++){
             hash[dbTrialList[i].i] = true;
@@ -166,13 +170,13 @@
 
           for(var j=0; j<apiTrialList.length; j++){
             if(hash[apiTrialList[j].id] !== true){
-              diff.push(apiTrialList[j].id);
+              diff.push(apiTrialList[j]);
             }
           }
           return diff;
         }
 
-        function findTrials(id, apiTrialList){
+        function findTrialById(id, apiTrialList){
           for(var i=0; i<apiTrialList.length; i++){
             if(apiTrialList[i].id == id){
               return apiTrialList[i];
@@ -198,10 +202,13 @@
           var displayCount = 2;
           $(".clinicalTrialGadget").show();
 
+          $(".img_star").attr("src", ENV_LOCAL_URL + "/images/star_empty.png");
+          $(".img_eye").attr("src", ENV_LOCAL_URL + "/images/eye_icon.png");
+
           for(var i=0; i<dbTrialList.length; i++){
-            var t = findTrials(dbTrialList[i].i, apiTrialList);
-            if(t !== null && (showHiddenTrials || dbTrialList[i].v === 1)){
-              renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, dbTrialList[i].v, dbTrialList[i].f);
+            var trial = findTrialById(dbTrialList[i].i, apiTrialList);
+            if(trial !== null && (showHiddenTrials || dbTrialList[i].v === 1)){
+              renderTrial(dbTrialList[i], trial);
             }
           }
           
@@ -214,16 +221,21 @@
               
               $(".clinicalTrialGadget").append(textToInsert);
             }
+            adjustProfileViewHeight();
+          } else {
+            adjustHomeViewHeight();
           }
-          adjustHeight();
         }
 
-        function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible, isFeature){
+        function renderTrial(dbTrialData, trial){
+          var isFeature = dbTrialData.f,
+              isVisible = dbTrialData.v;
+
           var textToInsert, 
             classTrialHidden = isVisible === 0 ? " trial-hidden" : "", 
             classTrialFeature = isFeature === 1 ? " trial-feature" : "";
 
-          textToInsert = '<li id=t' + pid + ' class="trial' + classTrialHidden + classTrialFeature + '"><div class="icon-wrap">';
+          textToInsert = '<li id=t' + trial.id + ' class="trial' + classTrialHidden + classTrialFeature + '"><div class="icon-wrap">';
 
           if(isFeature === 1){
             textToInsert += '<img class="icon-star" src="' + ENV_LOCAL_URL + '/images/star_filled.png">';
@@ -242,21 +254,25 @@
             textToInsert += '<span class="text-feat">FEATURED:</span>';
           }
 
-          textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
-          textToInsert += '<div class="detail"><img class="statImg" src="' + getImgUrlByStat(recStat, isVisible) + '">';
-          textToInsert += '<span class="status">' + recStat + '</span>';
-          textToInsert += '<span class="disease"> | ' + disease + ' | </span>';
-          textToInsert += '<span class="site">' + siteStat + '</span></div>';
+          textToInsert += '<div class="title"><a href="' + $(trial.url).attr("href") + '" target="_blank">' + trial.officialTitle + '</a></div>';
+          textToInsert += '<div class="detail"><img class="statImg" src="' + getImgUrlByStat(trial.recruitingStatus, isVisible) + '">';
+          textToInsert += '<span class="status">' + trial.recruitingStatus + '</span>';
+          textToInsert += '<span class="disease"> | ' + trial.diseaseArea + ' | </span>';
+          textToInsert += '<span class="site">' + trial.siteStatus + '</span></div>';
 
           if(isFeature === 1){
             $("#trial-list-feat").append(textToInsert);
           } else {
             $("#trial-list").append(textToInsert);
-          }
+          }        
         }
 
-        function adjustHeight(){
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 60);
+        function adjustProfileViewHeight(){
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").outerHeight(true) + 40);
+        }
+
+        function adjustHomeViewHeight(){
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").outerHeight(true) + 90);
         }
 
       </script>
@@ -274,14 +290,14 @@
               $('#trial-list-full li:gt(1)').toggle();
               $('.plusbutton').hide();
               $('.minusbutton').show();
-              adjustHeight();
+              adjustProfileViewHeight();
             });
    
             $(".view-profile").on("click", ".minusbutton", function(){
               $('#trial-list-full li:gt(1)').toggle();
               $('.plusbutton').show();
               $('.minusbutton').hide();
-              adjustHeight();
+              adjustProfileViewHeight();
             });
 
             loadTrialList(function(dbData, apiData){
@@ -504,21 +520,26 @@
         }
 
       </script>
-      
-      <div id="debug"></div>
+
       <div class="view-home">
         <div class="clinicalTrialGadget" style="display: none">
           <div class="instruction">
-          Drag and drop to reorder trials. Click the star icon to feature a trial. Click the eye icon to hide a trial from public view.
+          Drag and drop to reorder trials. Click 
+          <img class="img_star">
+          to feature a trial. Click
+          <img class="img_eye">
+          to hide a trial from public view.
           </div>
           <ul id="trial-list-feat">
           </ul>
           <ul id="trial-list">
           </ul>
+
           <div id="debug2">
             <button id="show" type="button">show userdata</button>
             <button id="clear" type="button">clear userdata</button>
           </div>
+
         </div>
       </div>
     ]]>
