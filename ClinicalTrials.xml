@@ -99,23 +99,23 @@
             getAppData(function(db_data){
               if(!api_data.error && !db_data.error){
                 var viewer = os.osapi.getViewerFromResult(db_data);
-                var trials = [], apiTrialList, dbTrialList, index;
+                var trials = [], apiTrialList, dbTrialList, newTrialIds, index;
 
                 if(api_data.count){
                   apiTrialList = api_data.response;
-                  dbTrialList = JSON.parse(viewer.ct_data);
                   sortTrials(apiTrialList);
-
-                  if($.isEmptyObject(viewer)){
+                
+                  if($.isEmptyObject(viewer)){    
                     for(var i=0; i<apiTrialList.length; i++){
                       var trial = {};
-                      trial.i = apiTrials[i].id + '';
+                      trial.i = apiTrialList[i].id + '';
                       trial.f = 0;
                       trial.v = 1;
                       trials.push(trial);
                     }
                   } else {
-                    var newTrialIds = findNewTrialIds(dbTrialList, apiTrialList)
+                    dbTrialList = JSON.parse(viewer.ct_data);
+                    newTrialIds = findNewTrialIds(dbTrialList, apiTrialList)
                     if(newTrialIds.length){
                       trials = dbTrialList.slice();
                       index = findIndexOfFirstHiddenTrial(trials);
@@ -139,7 +139,7 @@
                         callback(trials, apiTrialList);
                     });  
                   } else {
-                    if(callback)
+                    if(callback && dbTrialList.length)
                       callback(dbTrialList, apiTrialList);
                   }
                 }
