@@ -12,7 +12,7 @@
   <Content type="html" view="default, home, profile">
     <![CDATA[
       <!DOCTYPE html>
-      <link rel="stylesheet" type="text/css" href="css/csl_gadget.css">
+      <link rel="stylesheet" type="text/css" href="css/csl_clinical_trials.css">
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
       <script type="text/javascript" src="js/environment.js" ></script>
@@ -76,9 +76,8 @@
           getAPIUrl(function(url){
             if(url !== null){
               $.getJSON(url, function(result){
-                if(callback){
+                if(callback) 
                   callback(result);
-                }
               });  
             }
           });
@@ -95,34 +94,37 @@
           });
         }
 
-        function loadTrialOrder(callback){
-          getAPIData(function(apiData){
-            getAppData(function(appData){
-              if(!apiData.error && !appData.error){
-                var viewer = os.osapi.getViewerFromResult(appData);
-                var trials = [];
+        function loadTrialList(callback){
+          getAPIData(function(api_data){
+            getAppData(function(db_data){
+              if(!api_data.error && !db_data.error){
+                var viewer = os.osapi.getViewerFromResult(db_data);
+                var trials = [], apiTrialList, dbTrialList, index;
 
-                if(apiData.count){
-                  sortTrials(apiData.response);
+                if(api_data.count){
+                  apiTrialList = api_data.response;
+                  dbTrialList = JSON.parse(viewer.ct_data);
+                  sortTrials(apiTrialList);
+
                   if($.isEmptyObject(viewer)){
-                    for(var i=0; i<apiData.response.length; i++){
+                    for(var i=0; i<apiTrialList.length; i++){
                       var trial = {};
-                      trial.i = apiData.response[i].id + '';
+                      trial.i = apiTrials[i].id + '';
                       trial.f = 0;
                       trial.v = 1;
                       trials.push(trial);
                     }
                   } else {
-                    var trialObj = JSON.parse(viewer.ct_data);
-                    var newTrials = findNewTrials(trialObj, apiData.response)
-                    if(newTrials.length){
-                      trials = trialObj.slice();
-                      for(var i=0; i<newTrials.length; i++){
+                    var newTrialIds = findNewTrialIds(dbTrialList, apiTrialList)
+                    if(newTrialIds.length){
+                      trials = dbTrialList.slice();
+                      index = findIndexOfFirstHiddenTrial(trials);
+                      for(var i=0; i<newTrialIds.length; i++){
                         var trial = {};
-                        trial.i = newTrials[i] + '';
+                        trial.i = newTrialIds[i] + '';
                         trial.f = 0;
                         trial.v = 1;
-                        trials.push(trial);
+                        (index === -1) ? trials.push(trial) : trials.splice(index, 0, trial);
                       }
                     }
                   }
@@ -133,14 +135,12 @@
                       'appId':'@app',
                       'data':{'ct_data':JSON.stringify(trials)}
                     }).execute(function(response){
-                      if(callback){
-                        callback(trials, apiData);
-                      }
+                      if(callback)
+                        callback(trials, apiTrialList);
                     });  
                   } else {
-                    if(callback){
-                      callback(JSON.parse(viewer.ct_data), apiData);
-                    }
+                    if(callback)
+                      callback(dbTrialList, apiTrialList);
                   }
                 }
               }
@@ -158,37 +158,50 @@
           }
         }
 
-        function findNewTrials(db_array, api_array){
+        function findNewTrialIds(dbTrialList, apiTrialList){
           var hash = {}, diff = [];
-          for(var i=0; i<db_array.length; i++){
-            hash[db_array[i].i] = true;
+          for(var i=0; i<dbTrialList.length; i++){
+            hash[dbTrialList[i].i] = true;
           }
 
-          for(var i=0; i<api_array.length; i++){
-            if(hash[api_array[i].id] !== true){
-              diff.push(api_array[i].id);
+          for(var j=0; j<apiTrialList.length; j++){
+            if(hash[apiTrialList[j].id] !== true){
+              diff.push(apiTrialList[j].id);
             }
           }
           return diff;
         }
 
-        function findTrials(id, jsonObj){
-          for(var i in jsonObj.response){
-            if(jsonObj.response[i].id == id){
-              return jsonObj.response[i];
+        function findTrials(id, apiTrialList){
+          for(var i=0; i<apiTrialList.length; i++){
+            if(apiTrialList[i].id == id){
+              return apiTrialList[i];
             }
           }
           return null;
         }
 
-        function displayData(orderList, jsonObj, showHidden, callback){
+        function findIndexOfFirstHiddenTrial(trialList){
+          var len = trialList.length;
+          if(len === 0){
+            return -1; 
+          }
+          for(var i=0; i<len; i++){
+            if(trialList[i].v === 0){
+              return i;
+            }
+          }
+          return -1;
+        }
+
+        function displayData(dbTrialList, apiTrialList, showHiddenTrials){
           var displayCount = 2;
-          
           $(".clinicalTrialGadget").show();
-          for(var i=0; i<orderList.length; i++){
-            var t = findTrials(orderList[i].i,jsonObj);
-            if(t !== null && (showHidden || orderList[i].v === 1)){
-              renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v, orderList[i].f);
+
+          for(var i=0; i<dbTrialList.length; i++){
+            var t = findTrials(dbTrialList[i].i, apiTrialList);
+            if(t !== null && (showHiddenTrials || dbTrialList[i].v === 1)){
+              renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, dbTrialList[i].v, dbTrialList[i].f);
             }
           }
           
@@ -202,8 +215,7 @@
               $(".clinicalTrialGadget").append(textToInsert);
             }
           }
-
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 60);
+          adjustHeight();
         }
 
         function renderTrial(pid, title, recStat, disease, siteStat, url, isVisible, isFeature){
@@ -227,7 +239,7 @@
 
           if(isFeature === 1){
             textToInsert += '<img class="icon-feat" src="' + ENV_LOCAL_URL + '/images/r_star.png">';
-            textToInsert += '<span class="feat-text">FEATURED:</span>';
+            textToInsert += '<span class="text-feat">FEATURED:</span>';
           }
 
           textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
@@ -256,16 +268,8 @@
       <style> body{background-color: #EEEEEE;}</style>
       <script type="text/javascript">
 
-        function init(){
-          loadTrialOrder(function(result, result2){
-            displayData(result, result2, false);
-          });
-        }
-
         gadgets.util.registerOnLoadHandler(function(){
           $(document).ready(function() {
-            init();
-
             $(".view-profile").on("click", ".plusbutton", function(){
               $('#trial-list-full li:gt(1)').toggle();
               $('.plusbutton').hide();
@@ -279,13 +283,17 @@
               $('.minusbutton').hide();
               adjustHeight();
             });
+
+            loadTrialList(function(dbData, apiData){
+              displayData(dbData, apiData, false);
+            });
           });
         });
 
       </script>
       <div id='debug'></div>
       <div class="view-profile">
-        <div class="clinicalTrialGadget">
+        <div class="clinicalTrialGadget" style="display: none">
           <div class="header-title">
             <span class="header-image"><img src="images/magnifiying_icon_Red.png"></span>
             <span class="header-text">Active Clinical Trials</span>
@@ -303,30 +311,17 @@
 
   <Content type="html" view="home" preferred_width="700">
     <![CDATA[
-     
       <script type="text/javascript">
 
-        var gadgetPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
-        var elemList = "sortable",
-          elemTrial = "li.trial",
-          classTrial = "trial",
-          classTrialHidden = "trial-hidden",
-          classIconEye = "icon-eye",
-          classIconStar = "icon-star",
-          urlPath = "https://s3.amazonaws.com/clinical-trials-gadget/xml/";
-
         gadgets.util.registerOnLoadHandler(function(){
-
           $(document).ready(function(){
 
             $("#trial-list-feat").sortable({
               axis: "y",
               scroll: true,
-
               start: function(event, ui){
                 ui.placeholder.height(ui.item.height());
               },
-
               update: function(event, ui){
                 saveTrialStatus();
               }              
@@ -335,20 +330,17 @@
             $("#trial-list").sortable({
               axis: "y",
               scroll: true,
-
               start: function( event, ui ) {
                 ui.placeholder.height(ui.item.height());
               },
-
               update: function(event, ui) {
                 saveTrialStatus();
               },
-
-              items: "li:not(." + classTrialHidden + ")",
-              cancel: "." + classTrialHidden
+              items: "li:not(.trial-hidden)",
+              cancel: ".trial-hidden"
             });
 
-            $(".view-home").on("click", ".icon-eye", function( event ){
+            $(".view-home").on("click", ".icon-eye", function(event){
               event.preventDefault();
               var $trial = findTrialElement($(this));
               if ( $trial !== null ) {
@@ -357,11 +349,11 @@
               }
             });
 
-            $(".view-home").on("click", ".icon-star", function( event ){
+            $(".view-home").on("click", ".icon-star", function(event){
               event.preventDefault();
-              var $trial = findTrialElement( $(this) );
+              var $trial = findTrialElement($(this));
               if ( $trial !== null ) {
-                processTrialStarClick( $trial );
+                processTrialStarClick($trial);
                 saveTrialStatus();
               }
             });
@@ -385,22 +377,23 @@
                 'fields':'ct_data'
               }).execute(function(result){
                 var viewer = os.osapi.getViewerFromResult(result);
+                console.log(viewer.ct_data);
                 alert(viewer.ct_data);
               });
             })
 
-            loadTrialOrder(function(result,result2){
-              displayData(result,result2,true);
+            loadTrialList(function(dbData, apiData){
+              displayData(dbData, apiData, true);
             });
           });  
         });
 
         function saveTrialStatus(){
-          var featItem = $("ul#trial-list-feat li.trial");
-          var listItem = $("ul#trial-list li.trial");
-          var trials = [];
+          var featItems = $("ul#trial-list-feat li.trial"),
+              listItems = $("ul#trial-list li.trial"),
+              trials = [], trial = {};
 
-          featItem.each(function() {
+          featItems.each(function() {
             trial = {};
             trial.i = $(this).attr("id").slice(1);
             trial.f = 1
@@ -408,7 +401,7 @@
             trials.push(trial);
           });
 
-          listItem.each(function() {
+          listItems.each(function() {
             trial = {};
             trial.i = $(this).attr("id").slice(1);
             trial.f = 0
@@ -416,7 +409,7 @@
             trials.push(trial);
           });
 
-          if(listItem.length > 0){
+          if(listItems.length || featItems.length){
             osapi.appdata.update({
               'userId':'@owner',
               'groupId':'@self',
@@ -441,7 +434,7 @@
           var $trialList = $("#trial-list").children();
           var $trialLastVisible = null; // $( "#"+elemList+" li:last" );
           $trialList.each( function( index ) {
-            if ( !( $( this ).hasClass( classTrialHidden ) ) ) {
+            if ( !( $( this ).hasClass("trial-hidden") ) ) {
               $trialLastVisible = $( this );
             } else {
             // exits the loop
@@ -462,19 +455,18 @@
             $trial.find(".icon-eye").attr("src", ENV_LOCAL_URL + "/images/grey_eye_icon.png");
             $trial.addClass("trial-hidden");
             if ( $trial.hasClass("trial-feature")){
-              $trial.find(".icon-star").attr("src",urlPath + "/images/star_empty.png");
+              $trial.find(".icon-star").attr("src", ENV_LOCAL_URL + "/images/star_empty.png");
               $trial.removeClass("trial-feature");
             } 
           }
         }
 
         function moveTrialToEndOfVisibleList($trial, $trialLastVisible) {
-          
           var $clone = $trial.clone(true, true);
           if ( $trial.is( $trialLastVisible ) ) {
             $clone.appendTo( $( "#trial-list" ) );
           } else if ( $trialLastVisible === null ) {
-            $clone.insertBefore( $( "#trial-list" ).children()[0] );
+            $clone.insertBefore( $( "#trial-list" ).children()[0]);
           } else {
             $clone.insertAfter( $trialLastVisible );
           }
@@ -488,22 +480,20 @@
         }
 
         function toggleTrialFeature($trial) {  
-          if ( $trial.hasClass( "trial-feature" ) ) {
-            $trial.find("." + classIconStar).attr("src",urlPath + "images/star_empty.png");
+          if ($trial.hasClass("trial-feature")){
+            $trial.find(".icon-star").attr("src", ENV_LOCAL_URL + "/images/star_empty.png");
             $trial.removeClass( "trial-feature" );
           } else {
-            $trial.find("." + classIconStar).attr("src",urlPath + "images/star_filled.png");
-            $trial.addClass( "trial-feature" );
+            $trial.find(".icon-star").attr("src", ENV_LOCAL_URL + "/images/star_filled.png");
+            $trial.addClass("trial-feature");
           }
         }
 
         function moveTrialToEndOfFeatureList($trial, $trialLastVisible){
-          if( !($trial.hasClass("trial-feature"))){
-            $("#trial-list-feat").prepend($trial);
-          }
-          else {
+          if($trial.hasClass("trial-feature"))
             $("#trial-list").prepend($trial);
-          }
+          else
+            $("#trial-list-feat").prepend($trial);
         }
 
         function findLastFeatureTrial(){
