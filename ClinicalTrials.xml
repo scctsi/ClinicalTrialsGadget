@@ -96,7 +96,6 @@
         }
 
         function loadTrialOrder(callback){
-
           getAPIData(function(apiData){
             getAppData(function(appData){
               if(!apiData.error && !appData.error){
@@ -115,7 +114,7 @@
                     }
                   } else {
                     var trialObj = JSON.parse(viewer.ct_data);
-                    var newTrials = findNewTrial(trialObj, apiData.response)
+                    var newTrials = findNewTrials(trialObj, apiData.response)
                     if(newTrials.length){
                       trials = trialObj.slice();
                       for(var i=0; i<newTrials.length; i++){
@@ -159,21 +158,21 @@
           }
         }
 
-        function findNewTrial(dbArr, apiArr){
-          var hash = {}, diffArr = [];
-          for(var i=0; i<dbArr.length; i++){
-            hash[dbArr[i].i] = true;
+        function findNewTrials(db_array, api_array){
+          var hash = {}, diff = [];
+          for(var i=0; i<db_array.length; i++){
+            hash[db_array[i].i] = true;
           }
 
-          for(var i=0; i<apiArr.length; i++){
-            if(hash[apiArr[i].id] !== true){
-              diffArr.push(apiArr[i].id);
+          for(var i=0; i<api_array.length; i++){
+            if(hash[api_array[i].id] !== true){
+              diff.push(api_array[i].id);
             }
           }
-          return diffArr;
+          return diff;
         }
 
-        function findTrial(id, jsonObj){
+        function findTrials(id, jsonObj){
           for(var i in jsonObj.response){
             if(jsonObj.response[i].id == id){
               return jsonObj.response[i];
@@ -183,11 +182,11 @@
         }
 
         function displayData(orderList, jsonObj, showHidden, callback){
-
           var displayCount = 2;
-
+          
+          $(".clinicalTrialGadget").show();
           for(var i=0; i<orderList.length; i++){
-            var t = findTrial(orderList[i].i,jsonObj);
+            var t = findTrials(orderList[i].i,jsonObj);
             if(t !== null && (showHidden || orderList[i].v === 1)){
               renderTrial(t.id, t.officialTitle, t.recruitingStatus, t.diseaseArea, t.siteStatus, t.url, orderList[i].v, orderList[i].f);
             }
@@ -212,29 +211,36 @@
             classTrialHidden = isVisible === 0 ? " trial-hidden" : "", 
             classTrialFeature = isFeature === 1 ? " trial-feature" : "";
 
-            textToInsert = '<li id=t' + pid + ' class="trial' + classTrialHidden + classTrialFeature + '">';
-            textToInsert += '<div class="icon-wrap"><img class="icon-star" src="' + ENV_LOCAL_URL + '/images/' + (isFeature === 1 ? "star_filled" : "star_empty") + '.png">';
-            
-            if(isVisible === 1)
-              textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png"></div>';
-            else
-              textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/grey_eye_icon.png"></div>';
-            
-            if(isFeature === 1) {
-              textToInsert += '<img class="icon-feat" src="' + ENV_LOCAL_URL + '/images/r_star.png">';
-              textToInsert += '<span class="feat-text">FEATURED:</span>';
-            }
-            textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
-            textToInsert += '<div class="detail"><img class="statImg" src="' + getImgUrlByStat(recStat, isVisible) + '">';
-            textToInsert += '<span class="status">' + recStat + '</span>';
-            textToInsert += '<span class="disease"> | ' + disease + ' | </span>';
-            textToInsert += '<span class="site">' + siteStat + '</span></div>';
+          textToInsert = '<li id=t' + pid + ' class="trial' + classTrialHidden + classTrialFeature + '"><div class="icon-wrap">';
 
-            if(isFeature === 1){
-              $("#trial-list-feat").append(textToInsert);
-            } else {
-              $("#trial-list").append(textToInsert);
-            }
+          if(isFeature === 1){
+            textToInsert += '<img class="icon-star" src="' + ENV_LOCAL_URL + '/images/star_filled.png">';
+          } else { 
+            textToInsert += '<img class="icon-star" src="' + ENV_LOCAL_URL + '/images/star_empty.png">';
+          }
+
+          if(isVisible === 1){
+            textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/eye_icon.png"></div>';
+          } else {
+            textToInsert += '<img class="icon-eye" src="' + ENV_LOCAL_URL + '/images/grey_eye_icon.png"></div>';
+          }
+
+          if(isFeature === 1){
+            textToInsert += '<img class="icon-feat" src="' + ENV_LOCAL_URL + '/images/r_star.png">';
+            textToInsert += '<span class="feat-text">FEATURED:</span>';
+          }
+
+          textToInsert += '<div class="title"><a href="' + $(url).attr("href") + '" target="_blank">' + title + '</a></div>';
+          textToInsert += '<div class="detail"><img class="statImg" src="' + getImgUrlByStat(recStat, isVisible) + '">';
+          textToInsert += '<span class="status">' + recStat + '</span>';
+          textToInsert += '<span class="disease"> | ' + disease + ' | </span>';
+          textToInsert += '<span class="site">' + siteStat + '</span></div>';
+
+          if(isFeature === 1){
+            $("#trial-list-feat").append(textToInsert);
+          } else {
+            $("#trial-list").append(textToInsert);
+          }
         }
 
         function adjustHeight(){
@@ -511,10 +517,9 @@
       
       <div id="debug"></div>
       <div class="view-home">
-        <div class="clinicalTrialGadget">
-          <div class="header-title">
-            <span class="header-image"></span>
-            <span class="header-text"></span>
+        <div class="clinicalTrialGadget" style="display: none">
+          <div class="instruction">
+          Drag and drop to reorder trials. Click the star icon to feature a trial. Click the eye icon to hide a trial from public view.
           </div>
           <ul id="trial-list-feat">
           </ul>

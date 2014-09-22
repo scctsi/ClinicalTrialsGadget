@@ -1,9 +1,10 @@
-.clinicalTrialGadget{
+div.clinicalTrialGadget{
 	font-family: Arial;
 }
 
-.header-title{
-	margin: 7px 0 0 7px;
+div.view-profile .header-title{
+	margin-top: 7px;
+	margin-left: 7px;
 }
 
 .header-text{
@@ -15,22 +16,25 @@
 	font-weight: bold;
 }
 
+.instruction{
+	font-size: 13px;
+	padding: 10px;
+	font-weight: bold;
+	color:#990000;
+	border-left: 1px dotted #d6d6d6;
+	border-right: 1px dotted #d6d6d6;
+	border-top: 1px dotted #d6d6d6;
+}
+
 ul#trial-list, ul#trial-list-feat{
 	list-style-type: none;
 	padding: 0;
-}
-
-ul#trial-list-feat{
-	margin: 0px 5px 1px 5px;
-}
-
-ul#trial-list{
-	margin: 0px 5px 5px 5px;
+	margin: 0;
 }
 
 li.trial{
 	padding: 10px 5px 10px 5px;
-	margin: 1px 0px 1px 0px;
+	margin: 0px 0px 1px 0px;
 }
 
 div.view-home li.trial:hover{
@@ -57,30 +61,19 @@ div.view-home li.trial:active{
 	padding: 2px;
 }
 
-.icon-eye{
+.icon-eye, .icon-star{
 	padding: 2px;
 	cursor: pointer;
 }
 
-.icon-star{
-	padding: 2px;
-	cursor: pointer;
-}
-
-div.view-profile .icon-eye{
-	display: none;
-}
-
-div.view-profile .icon-star{
-	display: none;
-}
-
+div.view-profile .icon-eye, 
+div.view-profile .icon-star,
 div.view-profile li.trial-hidden{
 	display: none;
 }
 
 div.view-home li.trial-hidden {
-    border: 1px solid #d1d1d1;
+    border: 1px dotted #d1d1d1;
     cursor: default;
 }
 
@@ -91,19 +84,7 @@ div.view-home li.trial-hidden div.title a{
 div.view-home li.trial-hidden div.detail span{
     color: #CCCCCC;
 }
-/*
-div.view-home li.trial-hidden div.detail .statImg{
-    visibility: hidden;
-}
-*/
-div.view-home li.trial-hidden img.icon-star {
-    display: none;
-}
-/*
-div.view-home li.trial-hidden img.icon-eye {
-    -webkit-filter: opacity(50%);
-}
-*/
+
 div.view-home li.trial-hidden:hover{
 	background-color: transparent;
 }
@@ -157,7 +138,9 @@ div.view-profile .icon-feat{
 }
 
 div.view-home .icon-feat,
-div.view-home .feat-text{
+div.view-home .feat-text,
+div.view-home li.trial-hidden img.icon-star
+{
 	display: none;
 }
 
@@ -185,7 +168,7 @@ div.view-home .feat-text{
 	text-decoration: underline; 
 	cursor: pointer; 	
 }
-
+/*
 #show{
 	display:none;
 }
@@ -193,3 +176,4 @@ div.view-home .feat-text{
 #clear{
 	display:none;
 }
+*/
