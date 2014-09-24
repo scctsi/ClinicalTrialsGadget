@@ -5,8 +5,8 @@ The clinical trials gadget is designed to run on Profiles Research Networking So
 
 ###Basic workflow:
 1. Make request to Profiles for user first and last name.
-2. Make ajax call to API to get the clinal trials data for the user based on their full name.
-3. Sort the clinial trials by their recruiting status and the trials enddate.
+2. Make ajax call to API to get clinial trials data for the user by full name.
+3. Sort the clinial trials by the recruiting status and the trials enddate.
 4. Save the order back to the Profiles database.
 5. Display data on the gadget.
 
