@@ -15,7 +15,7 @@ http://profilesstage.sc-ctsi.org/ORNG/
 
 ####Profiles Installation Download and Guide:
 Profiles RNS Version 2.5.1  
-http://profiles.catalyst.harvard.edu/?pg=software
+http://profiles.catalyst.harvard.edu/?pg=download&version=2.5.1
 
 ####Profiles/ORNG Resource:
 http://opensocial-resources.googlecode.com/svn/spec/0.9/OpenSocial-Specification.xml  
