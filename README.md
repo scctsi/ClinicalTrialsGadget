@@ -8,7 +8,7 @@ The clinical trials gadget is designed to run on Profiles Research Networking So
 3. display data on the gadget.
 
 ###Profiles Installation Download:
-Profiles RNS Version 2.5.1
+Profiles RNS Version 2.5.1  
 http://profiles.catalyst.harvard.edu/?pg=software
 
 ###Profiles Installation Guide:
