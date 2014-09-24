@@ -10,7 +10,7 @@ The clinical trials gadget is designed to run on Profiles Research Networking So
 4. Save the order back to the Profiles database.
 5. Display data on the gadget.
 
-####Sandbox URL
+####Sandbox URL:
 http://profilesstage.sc-ctsi.org/ORNG/
 
 ####Profiles Installation Download and Guide:
