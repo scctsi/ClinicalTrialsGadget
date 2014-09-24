@@ -121,12 +121,16 @@
                       trials = dbTrialList.slice();
                       index = findIndexOfFirstHiddenTrial(trials);
                       sortTrials(newTrials);
-                      for(var i=0; i<newTrials.length; i++){
+                      for(var j=0; j<newTrials.length; j++){
                         trial = {};
-                        trial.i = newTrials[i].id + '';
+                        trial.i = newTrials[j].id + '';
                         trial.f = 0;
                         trial.v = 1;
-                        (index === -1) ? trials.push(trial) : trials.splice(index, 0, trial);
+                        if(index === -1){
+                          trials.push(trial);
+                        } else {
+                          trials.splice(index, 0, trial);
+                        }
                       }
                     }
                   }
@@ -393,7 +397,7 @@
               }).execute(function(){
                 alert('clear');
               });
-            })
+            });
 
             $("#show").on("click", function(event){
               osapi.appdata.get({
@@ -406,7 +410,7 @@
                 console.log(viewer.ct_data);
                 alert(viewer.ct_data);
               });
-            })
+            });
 
             loadTrialList(function(dbData, apiData){
               displayData(dbData, apiData, true);
@@ -422,15 +426,15 @@
           featItems.each(function() {
             trial = {};
             trial.i = $(this).attr("id").slice(1);
-            trial.f = 1
-            trial.v = 1
+            trial.f = 1;
+            trial.v = 1;
             trials.push(trial);
           });
 
           listItems.each(function() {
             trial = {};
             trial.i = $(this).attr("id").slice(1);
-            trial.f = 0
+            trial.f = 0;
             trial.v = $(this).attr("class").indexOf("trial-hidden") > 0 ? 0 : 1;
             trials.push(trial);
           });
