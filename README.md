@@ -1,4 +1,4 @@
-#Overview
+##Overview
 
 The clinical trials gadget is designed to run on Profiles Research Networking Software(PRNS) with Open Research Networking Gadgets(ORNG) extension installed.  The data is made available through a REST API.  http://scctsi-ctds-production.herokuapp.com/.
 
