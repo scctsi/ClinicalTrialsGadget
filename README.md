@@ -18,5 +18,5 @@ Profiles RNS Version 2.5.1
 http://profiles.catalyst.harvard.edu/?pg=software
 
 ###ORNG Resource
-http://opensocial-resources.googlecode.com/svn/spec/0.9/OpenSocial-Specification.xml
+http://opensocial-resources.googlecode.com/svn/spec/0.9/OpenSocial-Specification.xml  
 http://www.orng.info/
