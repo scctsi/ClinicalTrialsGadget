@@ -63,10 +63,10 @@
         function getAPIUrl(callback){
           var fullname, baseUrl = "http://scctsi-ctds-production.herokuapp.com/1/clinical_trials/";
           osapi.jsonld.getOwner().execute(function(result){
-            fullname = result.jsonld['foaf:firstName'] + ' ' + result.jsonld['foaf:lastName'];
+            fullname = result.jsonld['foaf:firstName'] + '%20' + result.jsonld['foaf:lastName'];
 
             // for testing only
-            if(fullname === "chi kwan") fullname = "Agustin Garcia";
+            if(fullname === "chi%20kwan") fullname = "Agustin%20Garcia";
             if(callback)
               callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
           }); 
@@ -75,10 +75,11 @@
         function getAPIData(callback){
           getAPIUrl(function(url){
             if(url !== null){
-              $.getJSON(url, function(result){
-                if(callback) 
-                  callback(result);
-              });  
+              var params = {};
+              params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.GET;
+              params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+              alert(url);
+              gadgets.io.makeRequest(url, callback, params);
             }
           });
         }
@@ -102,9 +103,8 @@
                 var viewer = os.osapi.getViewerFromResult(db_data);
                 var trials = [], trial = {}, apiTrialList, dbTrialList, newTrials, index;
 
-                if(api_data.count){
-                  //gadgets.orng.showGadget();
-                  apiTrialList = api_data.response;
+                if(api_data.data.count){
+                  apiTrialList = api_data.data.response;
                   
                   if($.isEmptyObject(viewer)){
                     sortTrials(apiTrialList);
@@ -268,15 +268,26 @@
         }
 
         function adjustProfileViewHeight(){
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").outerHeight(true) + 40);
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 40);
         }
 
         function adjustHomeViewHeight(){
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").outerHeight(true) + 90);
+          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 90);
         }
 
       </script>
     ]]>
+  </Content>
+
+  <Content type="html" view="verify">
+    <![CDATA[ 
+    <script type="text/javascript"> 
+      function test(){
+        osapi.orng.removeAppFromOwner().execute(function(result) {});
+      }
+      gadgets.util.registerOnLoadHandler(test);
+    </script>
+  ]]>
   </Content>
 
   <Content type="html" view="profile" preferred_width="670">
