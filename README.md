@@ -3,7 +3,7 @@
 The clinical trials gadget is designed to run on Profiles Research Networking Software(PRNS) with Open Research Networking Gadgets(ORNG) extension installed.  The data is made available through a REST API.  http://scctsi-ctds-production.herokuapp.com/.
 
 
-###Basic workflow:
+####Basic workflow:
 1. Make request to Profiles for user first and last name.
 2. Make ajax call to API to get clinial trials data for the user by full name.
 3. Sort the clinial trials by the recruiting status and the trials enddate.
