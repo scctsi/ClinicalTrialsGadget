@@ -78,7 +78,6 @@
               var params = {};
               params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.GET;
               params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
-              alert(url);
               gadgets.io.makeRequest(url, callback, params);
             }
           });
