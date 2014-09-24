@@ -4,9 +4,9 @@ The clinical trials gadget is designed to run on Profiles Research Networking So
 
 
 ###Basic workflow:
-1. make request to Profiles for user first and last name.
-2. make ajax call to API to get data for the user based on their full name.
-3. display data on the gadget.
+1. Make request to Profiles for user first and last name.
+2. Make ajax call to API to get data for the user based on their full name.
+3. Display data on the gadget.
 
 ###Profiles Installation Download and Guide:
 Profiles RNS Version 2.5.1  
