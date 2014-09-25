@@ -174,11 +174,3 @@ div.view-home li.trial-hidden img.icon-star
 	text-decoration: underline; 
 	cursor: pointer; 	
 }
-
-#show{
-	display:none;
-}
-
-#clear{
-	display:none;
-}

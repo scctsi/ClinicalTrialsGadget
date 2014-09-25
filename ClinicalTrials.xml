@@ -68,7 +68,6 @@
             framePerson(result, function(owner) {
               fullname = owner[FOAF('firstName')] + '%20' + owner[FOAF('lastName')];
               
-              if(fullname === "chi%20kwan") fullname = "Agustin%20Garcia";
               if(callback)
                 callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
             });                    
@@ -229,8 +228,7 @@
           }
           
           setTimeout(function(){
-            var h = $("#clinical-trials-gadget").height();
-            gadgets.window.adjustHeight(h + 40);
+            adjustHeight();
           }, 1);
         }
 
@@ -274,13 +272,11 @@
           }        
         }
 
-        function adjustProfileViewHeight(){
-          gadgets.window.adjustHeight($("#clinical-trials-gadget").height() + 40);
+        function adjustHeight(){
+          var h = $("#clinical-trials-gadget").height();
+          gadgets.window.adjustHeight(h + 40);
         }
 
-        function adjustHomeViewHeight(){
-          gadgets.window.adjustHeight($("#clinical-trials-gadget").height() + 90);
-        }
       </script>
     ]]>
   </Content>
@@ -320,14 +316,14 @@
               $('#trial-list-full li:gt(1)').toggle();
               $('.plusbutton').hide();
               $('.minusbutton').show();
-              adjustProfileViewHeight();
+              adjustHeight();
             });
    
             $(".view-profile").on("click", ".minusbutton", function(){
               $('#trial-list-full li:gt(1)').toggle();
               $('.plusbutton').show();
               $('.minusbutton').hide();
-              adjustProfileViewHeight();
+              adjustHeight();
             });
 
             loadTrialList(function(dbData, apiData){
@@ -538,12 +534,6 @@
         </ul>
         <ul id="trial-list">
         </ul>
-        <!--
-        <div id="debug2">
-          <button id="show" type="button">show userdata</button>
-          <button id="clear" type="button">clear userdata</button>
-        </div>
-        -->
       </div>
     ]]>
   </Content>
