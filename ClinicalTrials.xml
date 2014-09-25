@@ -7,9 +7,10 @@
     <Require feature="dynamic-height"/>
     <Require feature="jsonld"/>
     <Require feature="orng"/>
+    <Require feature="start-hidden"/>
   </ModulePrefs>
 
-  <Content type="html" view="default, home, profile">
+  <Content type="html" view="verify, default, home, profile">
     <![CDATA[
       <!DOCTYPE html>
       <link rel="stylesheet" type="text/css" href="css/csl_clinical_trials.css">
@@ -17,6 +18,7 @@
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
       <script type="text/javascript" src="js/environment.js" ></script>
       <script type="text/javascript" src="js/os.js" ></script>
+      <script type="text/javascript" src="js/ontology.js" ></script>
       <script type="text/javascript">
 
         function getImgUrlByStat(status, isVisible){
@@ -62,14 +64,15 @@
 
         function getAPIUrl(callback){
           var fullname, baseUrl = "http://scctsi-ctds-production.herokuapp.com/1/clinical_trials/";
-          osapi.jsonld.getOwner().execute(function(result){
-            fullname = result.jsonld['foaf:firstName'] + '%20' + result.jsonld['foaf:lastName'];
-
-            // for testing only
-            if(fullname === "chi%20kwan") fullname = "Agustin%20Garcia";
-            if(callback)
-              callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
-          }); 
+          osapi.jsonld.getOwner().execute(function(result) {
+            framePerson(result, function(owner) {
+              fullname = owner[FOAF('firstName')] + '%20' + owner[FOAF('lastName')];
+              
+              if(fullname === "chi%20kwan") fullname = "Agustin%20Garcia";
+              if(callback)
+                callback(fullname.length ? baseUrl + "?pi_full_name=" + fullname : null);
+            });                    
+          });
         }
 
         function getAPIData(callback){
@@ -97,12 +100,12 @@
         function loadTrialList(callback){
           getAPIData(function(api_data){
             getAppData(function(db_data){
-
               if(!api_data.error && !db_data.error){
                 var viewer = os.osapi.getViewerFromResult(db_data);
                 var trials = [], trial = {}, apiTrialList, dbTrialList, newTrials, index;
 
                 if(api_data.data.count){
+                  gadgets.orng.showGadget();
                   apiTrialList = api_data.data.response;
                   
                   if($.isEmptyObject(viewer)){
@@ -170,7 +173,6 @@
           for(var i=0; i<dbTrialList.length; i++){
             hash[dbTrialList[i].i] = true;
           }
-
           for(var j=0; j<apiTrialList.length; j++){
             if(hash[apiTrialList[j].id] !== true){
               diff.push(apiTrialList[j]);
@@ -201,9 +203,9 @@
           return -1;
         }
 
-        function displayData(dbTrialList, apiTrialList, showHiddenTrials){
+        function displayData(dbTrialList, apiTrialList, showHiddenTrials, callback){
           var displayCount = 2;
-          $(".clinicalTrialGadget").show();
+          $("#clinical-trials-gadget").show();
 
           $(".img_star").attr("src", ENV_LOCAL_URL + "/images/star_empty.png");
           $(".img_eye").attr("src", ENV_LOCAL_URL + "/images/eye_icon.png");
@@ -222,12 +224,14 @@
 
               textToInsert += '<div class="minusbutton" style="display: none;"><span>Show less</span><img src="' + ENV_LOCAL_URL + '/images/collapseRound.gif" alt="-" style="vertical-align:top"></div>';
               
-              $(".clinicalTrialGadget").append(textToInsert);
+              $("#clinical-trials-gadget").append(textToInsert);
             }
-            adjustProfileViewHeight();
-          } else {
-            adjustHomeViewHeight();
           }
+          
+          setTimeout(function(){
+            var h = $("#clinical-trials-gadget").height();
+            gadgets.window.adjustHeight(h + 40);
+          }, 1);
         }
 
         function renderTrial(dbTrialData, trial){
@@ -271,24 +275,36 @@
         }
 
         function adjustProfileViewHeight(){
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 40);
+          gadgets.window.adjustHeight($("#clinical-trials-gadget").height() + 40);
         }
 
         function adjustHomeViewHeight(){
-          gadgets.window.adjustHeight($(".clinicalTrialGadget").height() + 90);
+          gadgets.window.adjustHeight($("#clinical-trials-gadget").height() + 90);
         }
-
       </script>
     ]]>
   </Content>
 
   <Content type="html" view="verify">
     <![CDATA[ 
-    <script type="text/javascript"> 
-      function test(){
-        osapi.orng.removeAppFromOwner().execute(function(result) {});
+    <script type="text/javascript">     
+      function checkData() {
+        osapi.orng.getAppInstance().execute(function(result) {
+          if (typeof result !== 'string') {
+            getAPIData(registerApp);          
+          }
+        });
       }
-      gadgets.util.registerOnLoadHandler(test);
+        
+      function registerApp(api_data) {
+        if (api_data.data.count) {
+          osapi.orng.addAppToOwner().execute(function(result) {});
+        }
+        else {
+          osapi.orng.removeAppFromOwner().execute(function(result) {});         
+        }
+      }
+      gadgets.util.registerOnLoadHandler(checkData);
     </script>
   ]]>
   </Content>
@@ -321,21 +337,20 @@
         });
 
       </script>
-      <div id='debug'></div>
-      <div class="view-profile">
-        <div class="clinicalTrialGadget" style="display: none">
-          <div class="header-title">
-            <span class="header-image"><img src="images/magnifiying_icon_Red.png"></span>
-            <span class="header-text">Active Clinical Trials</span>
-          </div>
-          <div id="trial-list-full">
-            <ul id="trial-list-feat">
-            </ul>
-            <ul id="trial-list">
-            </ul>
-          </div>
-        </div> 
-      </div>
+
+      <div id="clinical-trials-gadget" class="view-profile" style="display: none">
+        <div class="header-title">
+          <span class="header-image"><img src="images/magnifiying_icon_Red.png"></span>
+          <span class="header-text">Active Clinical Trials</span>
+        </div>
+        <div id="trial-list-full">
+          <ul id="trial-list-feat">
+          </ul>
+          <ul id="trial-list">
+          </ul>
+        </div>
+      </div> 
+
     ]]>
   </Content>  
 
@@ -386,30 +401,6 @@
                 processTrialStarClick($trial);
                 saveTrialStatus();
               }
-            });
-
-            $("#clear").on("click", function(event){
-              osapi.appdata.delete({
-                'userId':'@owner',
-                'groupId':'@self',
-                'appId':'@app',
-                'fields':'ct_data'
-              }).execute(function(){
-                alert('clear');
-              });
-            });
-
-            $("#show").on("click", function(event){
-              osapi.appdata.get({
-                'userId':'@owner',
-                'groupId':'@self',
-                'appId':'@app',
-                'fields':'ct_data'
-              }).execute(function(result){
-                var viewer = os.osapi.getViewerFromResult(result);
-                console.log(viewer.ct_data);
-                alert(viewer.ct_data);
-              });
             });
 
             loadTrialList(function(dbData, apiData){
@@ -520,10 +511,11 @@
         }
 
         function moveTrialToEndOfFeatureList($trial, $trialLastVisible){
-          if($trial.hasClass("trial-feature"))
+          if($trial.hasClass("trial-feature")){
             $("#trial-list").prepend($trial);
-          else
+          } else {
             $("#trial-list-feat").prepend($trial);
+          }
         }
 
         function findLastFeatureTrial(){
@@ -532,29 +524,26 @@
             $trialLastFeature = $("#trial-list").children(".trial-feature:last");
           return $trialLastFeature;
         }
-
       </script>
-
-      <div class="view-home">
-        <div class="clinicalTrialGadget" style="display: none">
-          <div class="instruction">
+    
+      <div id="clinical-trials-gadget" class="view-home" style="display: none">
+        <div class="instruction">
           Drag and drop to reorder trials. Click 
           <img class="img_star">
           to feature a trial. Click
           <img class="img_eye">
           to hide a trial from public view.
-          </div>
-          <ul id="trial-list-feat">
-          </ul>
-          <ul id="trial-list">
-          </ul>
-
-          <div id="debug2">
-            <button id="show" type="button">show userdata</button>
-            <button id="clear" type="button">clear userdata</button>
-          </div>
-
         </div>
+        <ul id="trial-list-feat">
+        </ul>
+        <ul id="trial-list">
+        </ul>
+        <!--
+        <div id="debug2">
+          <button id="show" type="button">show userdata</button>
+          <button id="clear" type="button">clear userdata</button>
+        </div>
+        -->
       </div>
     ]]>
   </Content>
