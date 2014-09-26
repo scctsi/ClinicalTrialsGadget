@@ -2,11 +2,11 @@
 
 The clinical trials gadget is designed to run on Profiles Research Networking Software(PRNS) with Open Research Networking Gadgets(ORNG) extension installed.  The data is made available through a REST API.  http://scctsi-ctds-production.herokuapp.com/.
 
-####Installation
+####Installation:
 1. checkout clinicalTrials.xml to your location \<GadgetURL\>
 2. checkout image files to \<GadgetURL\>/images/.
 3. checkout environment.js to \<GadgetURL\>/js/
-4. checkout csl.gadget.css to \<GadgetURL\>/css/
+4. checkout csl_gadget.css to \<GadgetURL\>/css/
 5. update environment.js, change variable ENV_GADGET_URL to your gadget url.
 
 ####Basic workflow:
