@@ -25,17 +25,17 @@
           switch(status.toLowerCase()){
             case 'recruiting':
             case 'enrolling by invitation':
-              return ENV_PROFILES_URL + "/images/" + (isVisible ? "icon_check.png" : "grey_icon_check.png");
+              return ENV_GADGET_URL + "/images/" + (isVisible ? "icon_check.png" : "grey_icon_check.png");
             case 'active, not recruiting':
             case 'not yet recruiting':
-              return ENV_PROFILES_URL + '/images/' + (isVisible ? 'icon_triangle.png' : 'grey_icon_triangle.png');
+              return ENV_GADGET_URL + '/images/' + (isVisible ? 'icon_triangle.png' : 'grey_icon_triangle.png');
             case 'completed':
             case 'suspended':
             case 'terminated':
             case 'withdrawn':
-              return ENV_PROFILES_URL + '/images/' + (isVisible ? 'icon_x.png' : 'grey_icon_x.png');
+              return ENV_GADGET_URL + '/images/' + (isVisible ? 'icon_x.png' : 'grey_icon_x.png');
             default:
-              return ENV_PROFILES_URL + '/images/filler.png';
+              return ENV_GADGET_URL + '/images/filler.png';
           }          
         }
 
@@ -206,8 +206,8 @@
           var displayCount = 2;
           $("#clinical-trials-gadget").show();
 
-          $(".img_star").attr("src", ENV_PROFILES_URL + "/images/star_empty.png");
-          $(".img_eye").attr("src", ENV_PROFILES_URL + "/images/eye_icon.png");
+          $(".img_star").attr("src", ENV_GADGET_URL + "/images/star_empty.png");
+          $(".img_eye").attr("src", ENV_GADGET_URL + "/images/eye_icon.png");
 
           for(var i=0; i<dbTrialList.length; i++){
             var trial = findTrialById(dbTrialList[i].i, apiTrialList);
@@ -219,9 +219,9 @@
           if(gadgets.views.getCurrentView().name_ === "profile"){
             if($("#trial-list-full li:not(.trial-hidden)").length > displayCount){
               $("#trial-list-full li:gt(1)").hide();
-              var textToInsert = '<div class="plusbutton"><span><strong>...</strong> Show more</span><img src="' + ENV_PROFILES_URL + '/images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
+              var textToInsert = '<div class="plusbutton"><span><strong>...</strong> Show more</span><img src="' + ENV_GADGET_URL + '/images/expandRound.gif" alt="+" style="vertical-align:top"></div>';
 
-              textToInsert += '<div class="minusbutton" style="display: none;"><span>Show less</span><img src="' + ENV_PROFILES_URL + '/images/collapseRound.gif" alt="-" style="vertical-align:top"></div>';
+              textToInsert += '<div class="minusbutton" style="display: none;"><span>Show less</span><img src="' + ENV_GADGET_URL + '/images/collapseRound.gif" alt="-" style="vertical-align:top"></div>';
               
               $("#clinical-trials-gadget").append(textToInsert);
             }
@@ -243,19 +243,19 @@
           textToInsert = '<li id=t' + trial.id + ' class="trial' + classTrialHidden + classTrialFeature + '"><div class="icon-wrap">';
 
           if(isFeature === 1){
-            textToInsert += '<img class="icon-star" src="' + ENV_PROFILES_URL + '/images/star_filled.png">';
+            textToInsert += '<img class="icon-star" src="' + ENV_GADGET_URL + '/images/star_filled.png">';
           } else { 
-            textToInsert += '<img class="icon-star" src="' + ENV_PROFILES_URL + '/images/star_empty.png">';
+            textToInsert += '<img class="icon-star" src="' + ENV_GADGET_URL + '/images/star_empty.png">';
           }
 
           if(isVisible === 1){
-            textToInsert += '<img class="icon-eye" src="' + ENV_PROFILES_URL + '/images/eye_icon.png"></div>';
+            textToInsert += '<img class="icon-eye" src="' + ENV_GADGET_URL + '/images/eye_icon.png"></div>';
           } else {
-            textToInsert += '<img class="icon-eye" src="' + ENV_PROFILES_URL + '/images/grey_eye_icon.png"></div>';
+            textToInsert += '<img class="icon-eye" src="' + ENV_GADGET_URL + '/images/grey_eye_icon.png"></div>';
           }
 
           if(isFeature === 1){
-            textToInsert += '<img class="icon-feat" src="' + ENV_PROFILES_URL + '/images/r_star.png">';
+            textToInsert += '<img class="icon-feat" src="' + ENV_GADGET_URL + '/images/r_star.png">';
             textToInsert += '<span class="text-feat">FEATURED:</span>';
           }
 
@@ -283,7 +283,7 @@
 
   <Content type="html" view="verify">
     <![CDATA[ 
-    <script type="text/javascript">     
+    <script type="text/javascript">
       function checkData() {
         osapi.orng.getAppInstance().execute(function(result) {
           if (typeof result !== 'string') {
@@ -291,13 +291,15 @@
           }
         });
       }
-        
+
       function registerApp(api_data) {
         if (api_data.data.count) {
-          osapi.orng.addAppToOwner().execute(function(result) {});
+          osapi.orng.addAppToOwner().execute(function(result) {
+          });
         }
         else {
-          osapi.orng.removeAppFromOwner().execute(function(result) {});         
+          osapi.orng.removeAppFromOwner().execute(function(result) {
+          });         
         }
       }
       gadgets.util.registerOnLoadHandler(checkData);
@@ -465,14 +467,14 @@
           var status = $trial.find(".status").text();
           if($trial.hasClass("trial-hidden")){
             $trial.find(".statImg").attr("src", getImgUrlByStat(status, 1));
-            $trial.find(".icon-eye").attr("src", ENV_PROFILES_URL + "/images/eye_icon.png");
+            $trial.find(".icon-eye").attr("src", ENV_GADGET_URL + "/images/eye_icon.png");
             $trial.removeClass("trial-hidden");
           } else {
             $trial.find(".statImg").attr("src", getImgUrlByStat(status, 0));
-            $trial.find(".icon-eye").attr("src", ENV_PROFILES_URL + "/images/grey_eye_icon.png");
+            $trial.find(".icon-eye").attr("src", ENV_GADGET_URL + "/images/grey_eye_icon.png");
             $trial.addClass("trial-hidden");
             if ( $trial.hasClass("trial-feature")){
-              $trial.find(".icon-star").attr("src", ENV_PROFILES_URL + "/images/star_empty.png");
+              $trial.find(".icon-star").attr("src", ENV_GADGET_URL + "/images/star_empty.png");
               $trial.removeClass("trial-feature");
             } 
           }
@@ -498,10 +500,10 @@
 
         function toggleTrialFeature($trial) {  
           if ($trial.hasClass("trial-feature")){
-            $trial.find(".icon-star").attr("src", ENV_PROFILES_URL + "/images/star_empty.png");
+            $trial.find(".icon-star").attr("src", ENV_GADGET_URL + "/images/star_empty.png");
             $trial.removeClass( "trial-feature" );
           } else {
-            $trial.find(".icon-star").attr("src", ENV_PROFILES_URL + "/images/star_filled.png");
+            $trial.find(".icon-star").attr("src", ENV_GADGET_URL + "/images/star_filled.png");
             $trial.addClass("trial-feature");
           }
         }
