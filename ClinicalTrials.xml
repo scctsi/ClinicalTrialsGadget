@@ -13,7 +13,7 @@
   <Content type="html" view="verify, default, home, profile">
     <![CDATA[
       <!DOCTYPE html>
-      <link rel="stylesheet" type="text/css" href="css/csl_clinical_trials.css">
+      <link rel="stylesheet" type="text/css" href="css/csl_gadget.css">
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
       <script type="text/javascript" src="js/environment.js" ></script>
@@ -226,7 +226,7 @@
               $("#clinical-trials-gadget").append(textToInsert);
             }
           }
-          
+
           setTimeout(function(){
             adjustHeight();
           }, 1);
@@ -274,7 +274,7 @@
 
         function adjustHeight(){
           var h = $("#clinical-trials-gadget").height();
-          gadgets.window.adjustHeight(h + 40);
+          gadgets.window.adjustHeight(h + 30);
         }
 
       </script>
