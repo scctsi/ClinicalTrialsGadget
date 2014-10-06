@@ -485,7 +485,7 @@
           if ( $trial.is( $trialLastVisible ) ) {
             $clone.appendTo( $( "#trial-list" ) );
           } else if ( $trialLastVisible === null ) {
-            $clone.insertBefore( $( "#trial-list" ).children()[0]);
+            $("#trial-list").prepend($clone);
           } else {
             $clone.insertAfter( $trialLastVisible );
           }
