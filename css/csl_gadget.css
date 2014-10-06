@@ -13,8 +13,7 @@ div.view-profile .header-title{
 	bottom: 8px;
 	padding: 2px;
 	color:#990000;
-	font-size: 16px;
-	font-weight: bold;
+	font-size: 18px;
 }
 
 div.instruction{
@@ -155,7 +154,7 @@ div.view-home li.trial-hidden img.icon-star
 	float:left;
 	position: relative;
 	font-size: 13px;
-	color:#990000;
+	color:#000000;
 	margin-right: 4px;
 	bottom: -2px;
 }
