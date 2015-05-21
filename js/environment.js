@@ -2,12 +2,14 @@
 
 //For production
 /************
-var ENV_PROFILES_URL = 'http://profiles.ucsf.edu';
-var ENV_LOCAL_URL = 'http://profiles.ucsf.edu';
+var ENV_PROFILES_URL = 'http://profiles.sc-ctsi.org/';
+var ENV_LOCAL_URL = 'http://profiles.sc-ctsi.org/';
+var ENV_API_URL = 'http://scctsi-ctds-production.herokuapp.com/1/clinical_trials/';
 **************/
 
 //For staging
 var ENV_PROFILES_URL = 'http://stage-profiles.ucsf.edu/profiles200';
-var ENV_LOCAL_URL = 'http://stage-profiles.ucsf.edu';
+var ENV_LOCAL_URL = 'http://profilesstage.sc-ctsi.org/';
 
-var ENV_GADGET_URL = 'http://s3.amazonaws.com/clinical-trials-gadget/xml';
+var ENV_GADGET_URL = 'http://sc-ctsi.org/clinical_trials_gadget_staging/ClinicalTrials.xml';
+var ENV_API_URL = 'http://scctsi-ctds-staging.herokuapp.com/1/clinical_trials/';

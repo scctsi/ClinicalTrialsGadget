@@ -63,7 +63,7 @@
         }
 
         function getAPIUrl(callback){
-          var fullname, baseUrl = "http://scctsi-ctds-production.herokuapp.com/1/clinical_trials/";
+          var fullname, baseUrl = ENV_API_URL;
           osapi.jsonld.getOwner().execute(function(result) {
             framePerson(result, function(owner) {
               fullname = owner[FOAF('firstName')] + '%20' + owner[FOAF('lastName')];
