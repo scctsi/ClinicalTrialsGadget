@@ -12,6 +12,6 @@ var ENV_GADGET_URL = 'http://sc-ctsi.org/clinical_trials_gadget/ClinicalTrials.x
 var ENV_PROFILES_URL = 'http://profilesstage.sc-ctsi.org/';
 var ENV_LOCAL_URL = 'http://profilesstage.sc-ctsi.org/';
 
-var ENV_GADGET_URL = 'http://sc-ctsi.org/clinical_trials_gadget_staging/ClinicalTrials.xml';
+var ENV_GADGET_URL = 'http://sc-ctsi.org/clinical_trials_gadget_staging';
 var ENV_API_URL = 'http://scctsi-ctds-staging.herokuapp.com/1/clinical_trials/';
 **************/
