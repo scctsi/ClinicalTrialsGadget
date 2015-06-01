@@ -260,7 +260,7 @@
           if(isVisible === 1){
             textToInsert += '<img class="icon-eye" src="' + ENV_GADGET_URL + '/images/eye_icon.png"></div>';
           } else {
-            textToInsert += '<img class="icon-eye" src="' + ENV_GADGET_URL + '/images/grey_eye_icon.png"></div>';
+            textToInsert += '<img class="icon-eye" src="' + ENV_GADGET_URL + '/images/grey_icon_eye.png"></div>';
           }
 
           if(isFeature === 1){
