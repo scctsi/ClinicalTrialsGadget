@@ -479,7 +479,7 @@
             $trial.removeClass("trial-hidden");
           } else {
             $trial.find(".statImg").attr("src", getImgUrlByStat(status, 0));
-            $trial.find(".icon-eye").attr("src", ENV_GADGET_URL + "/images/grey_eye_icon.png");
+            $trial.find(".icon-eye").attr("src", ENV_GADGET_URL + "/images/grey_icon_eye.png");
             $trial.addClass("trial-hidden");
             if ( $trial.hasClass("trial-feature")){
               $trial.find(".icon-star").attr("src", ENV_GADGET_URL + "/images/star_empty.png");
