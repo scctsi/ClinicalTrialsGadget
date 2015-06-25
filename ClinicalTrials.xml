@@ -267,7 +267,7 @@
             textToInsert += '<img class="icon-feat" src="' + ENV_GADGET_URL + '/images/r_star.png">';
             textToInsert += '<span class="text-feat">FEATURED:</span>';
           }
-          textToInsert += '<div class="title"><a href="' + $(trial.url).attr("href") + '" onclick=ga(\'send\',\'event\',\'Clinical Trials Gadget\',\'' + $(trial.url).attr("href") + '\')' + ' target="_blank">' + trial.officialTitle + '</a></div>';
+          textToInsert += '<div class="title"><a href="' + $(trial.url).attr("href") + '" onclick=ga(\'send\',\'event\',\'Clinical Trials Gadget\',\'' + '\' + $(trial.url).attr("href") + '\')' + ' target="_blank">' + trial.officialTitle + '</a></div>';
           textToInsert += '<div class="detail"><img class="statImg" src="' + getImgUrlByStat(trial.recruitingStatus, isVisible) + '">';
           textToInsert += '<span class="status">' + getBlankField(trial.recruitingStatus) + '</span>';
           textToInsert += '<span class="disease"> | ' + getBlankField(trial.diseaseArea) + ' | </span>';
